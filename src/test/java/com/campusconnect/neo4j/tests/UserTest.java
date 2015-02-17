@@ -32,7 +32,7 @@ public class UserTest extends TestBase {
     @Test(dependsOnMethods = "createTest")
     public void getUser(){
         User resultUser = userDao.getUser(createdUser.getId());
-        System.out.println(resultUser);
+        System.err.println(resultUser);
     }
 
     @Test(dependsOnMethods = "getUser")
