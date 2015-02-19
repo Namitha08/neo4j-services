@@ -10,5 +10,4 @@ import java.util.List;
  * Created by I308260 on 2/17/2015.
  */
 public interface BookRepository extends GraphRepository<Book> {
-
 }

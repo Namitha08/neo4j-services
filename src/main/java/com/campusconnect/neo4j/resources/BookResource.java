@@ -13,10 +13,10 @@ import javax.ws.rs.core.Response;
 @Path("books")
 @Consumes("application/json")
 @Produces("application/json")
-public class BookResourceB {
+public class BookResource {
     private BookDao bookDao;
 
-    public BookResourceB(BookDao bookDao) {
+    public BookResource(BookDao bookDao) {
 
         this.bookDao = bookDao;
     }

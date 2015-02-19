@@ -28,4 +28,5 @@ public class CollegeTest extends TestBase {
         College resultCollege = collegeDao.getCollege(createdCollege.getId());
         assert resultCollege != null;
     }
+    
 }
