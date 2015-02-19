@@ -21,7 +21,7 @@ public class BookDao {
         this.neo4jTemplate = neo4jTemplate;
     }
     
-    
+
     public Book createBook(Book book)
     {
         book.setId(UUID.randomUUID().toString());
@@ -36,5 +36,4 @@ public class BookDao {
     public Book getBook(String bookId) {
         return bookRepository.findBySchemaPropertyValue("id", bookId);
     }
-    
 }

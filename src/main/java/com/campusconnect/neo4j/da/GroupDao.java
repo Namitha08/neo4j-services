@@ -20,19 +20,22 @@ public class GroupDao {
         this.neo4jTemplate = neo4jTemplate;
     }
 
-    @Autowired
-    private GroupRepository groupRepository;
+//    @Autowired
+//    private GroupRepository groupRepository;
 
     public Group createGroup(Group group){
-        group.setId(UUID.randomUUID().toString());
-        return groupRepository.save(group);
+//        group.setId(UUID.randomUUID().toString());
+//        return groupRepository.save(group);
+        return null;
     }
 
     public Group getGroup(String groupId){
-        return groupRepository.findBySchemaPropertyValue("id", groupId);
+//        return groupRepository.findBySchemaPropertyValue("id", groupId);
+        return null;
     }
 
     public List<User> getUsers(String groupId){
-        return groupRepository.getUsers(groupId);
+//        return groupRepository.getUsers(groupId);
+        return null;
     }
 }

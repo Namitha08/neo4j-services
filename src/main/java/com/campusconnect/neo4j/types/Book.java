@@ -14,9 +14,17 @@ public class Book {
 
     @Indexed(unique=true)
     private String id;
-    
+
+    public Book() {
+    }
+
     private String name;
     private String isbn;
+
+    public Book(String name, String isbn) {
+        this.name = name;
+        this.isbn = isbn;
+    }
 
     public Long getNodeId() {
         return nodeId;

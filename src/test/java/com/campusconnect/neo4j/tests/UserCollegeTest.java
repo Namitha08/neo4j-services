@@ -37,7 +37,7 @@ public class UserCollegeTest extends TestBase {
         College college = new College(collegeFirstName + " College", collegeFirstName.charAt(0) + "."+"C");
         createdCollege = collegeDao.createCollege(college);
 
-        User user = getFakeUser(faker);
+        User user = getFakeUser();
         User createdUser = userDao.createUser(user);
 
         System.err.println("college-id:" + createdCollege.getId() + " userId:" + user.getId());

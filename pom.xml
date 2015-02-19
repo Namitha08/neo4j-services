@@ -45,12 +45,12 @@
                     <stopPort>9966</stopPort>
                     <stopKey>foo</stopKey>
                     <webAppConfig>
-                        <contextPath>/perf</contextPath>
+                        <contextPath>/neo4j</contextPath>
                     </webAppConfig>
                     <systemProperties>
                         <systemProperty>
                             <name>jetty.port</name>
-                            <value>8082</value>
+                            <value>8389</value>
                         </systemProperty>
                     </systemProperties>
                 </configuration>
