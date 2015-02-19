@@ -19,7 +19,7 @@
 
 
     <neo4j:repositories base-package="com.campusconnect.neo4j.repositories" />
-    <neo4j:config base-package="com.campusconnect.neo4j.types" graphDatabaseService="graphDatabaseService"/>
+    <neo4j:config base-package="com.campusconnect.neo4j.types" graphDatabaseService="graphDatabaseService" />
 
 
     <bean id="graphDatabaseService"
@@ -49,8 +49,16 @@
         <constructor-arg index="0" ref="neo4jTemplate" />
     </bean>
 
+    <bean class="com.campusconnect.neo4j.da.BookDao" id="bookDao">
+        <constructor-arg index="0" ref="neo4jTemplate"/>
+    </bean>
+
     <bean class="com.campusconnect.neo4j.resources.UserResource">
         <constructor-arg index="0" ref="userDao"/>
         <constructor-arg index="1" ref="collegeDao" />
+    </bean>
+
+    <bean class="com.campusconnect.neo4j.resources.BookResource">
+        <constructor-arg index="0" ref="bookDao"/>
     </bean>
 </beans>

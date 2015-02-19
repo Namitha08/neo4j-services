@@ -26,13 +26,13 @@ public class UserTest extends TestBase {
 
     @Test
     public void createTest(){
-        createdUser = userDao.createUser(getFakeUser(faker));
+        createdUser = userDao.createUser(getFakeUser());
     }
 
     @Test(dependsOnMethods = "createTest")
     public void getUser(){
         User resultUser = userDao.getUser(createdUser.getId());
-        System.out.println(resultUser);
+        System.err.println(resultUser);
     }
 
     @Test(dependsOnMethods = "getUser")
@@ -50,26 +50,26 @@ public class UserTest extends TestBase {
     @Test
     public void addFollowerToFixedIdUser(){
         User fixedIdUser = userDao.getUser("8318f66b-c836-4c89-888b-97dc72927e78");
-        User secondUser = userDao.createUser(getFakeUser(faker));
+        User secondUser = userDao.createUser(getFakeUser());
         userDao.createFollowingRelation(fixedIdUser, secondUser);
     }
 
     @Test
     public void addFollowingToFixedIdUser(){
         User fixedIdUser = userDao.getUser("8318f66b-c836-4c89-888b-97dc72927e78");
-        User secondUser = userDao.createUser(getFakeUser(faker));
+        User secondUser = userDao.createUser(getFakeUser());
         userDao.createFollowingRelation(secondUser, fixedIdUser);
     }
 
     @Test(dependsOnMethods = "getUser")
     public void addFollower(){
-        User secondUser = userDao.createUser(getFakeUser(faker));
+        User secondUser = userDao.createUser(getFakeUser());
         userDao.createFollowingRelation(createdUser, secondUser);
     }
 
     @Test(dependsOnMethods = "getUser")
     public void addFollowing(){
-        User secondUser = userDao.createUser(getFakeUser(faker));
+        User secondUser = userDao.createUser(getFakeUser());
         userDao.createFollowingRelation(secondUser, createdUser);
     }
 
