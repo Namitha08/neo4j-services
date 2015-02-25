@@ -27,34 +27,20 @@ public class UserDao {
 
     public User createUser(User user){
         user.setId(UUID.randomUUID().toString());
-        User createdUser = neo4jTemplate.save(user);
-        //Todo:  log the id
-        System.out.println("Saved:" + user);
-        return createdUser;
+        return neo4jTemplate.save(user);
     }
 
     public User getUser(String userId) {
         return userRepository.findBySchemaPropertyValue("id", userId);
     }
 
-    public void createRelation(String userId1, String userId2, UserRelationType userRelationType){
-        neo4jTemplate.createRelationshipBetween(getUser(userId1), getUser(userId2), UserRelation.class, userRelationType.name(), false);
-    }
-
     public void createFollowingRelation(User user1, User user2){
+    
         neo4jTemplate.createRelationshipBetween(user1, user2, FollowingRelation.class, UserRelationType.FOLLOWING.toString(), false);
     }
 
     public User updateUser(User user){
-        User updatedUser = neo4jTemplate.save(user);
-        return updatedUser;
-    }
-
-    public void addCollege(College college, User user, Map<String, Object> properties){
-        Node userNode = neo4jTemplate.getNode(user.getNodeId());
-        Node collegeNode = neo4jTemplate.getNode(college.getNodeId());
-        Relationship relationship = neo4jTemplate.createRelationshipBetween(userNode, collegeNode, RelationTypes.USER_ACCESS.toString(), properties);
-
+        return neo4jTemplate.save(user);
     }
 
     public List<User> getFollowers(User user){

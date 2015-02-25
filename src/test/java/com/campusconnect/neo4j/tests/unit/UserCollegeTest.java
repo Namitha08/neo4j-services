@@ -1,8 +1,9 @@
-package com.campusconnect.neo4j.tests;
+package com.campusconnect.neo4j.tests.unit;
 
 import com.campusconnect.neo4j.da.CollegeDao;
 import com.campusconnect.neo4j.da.UserDao;
 import com.campusconnect.neo4j.resources.UserResource;
+import com.campusconnect.neo4j.tests.TestBase;
 import com.campusconnect.neo4j.types.AccessRoles;
 import com.campusconnect.neo4j.types.College;
 import com.campusconnect.neo4j.types.User;
@@ -11,7 +12,7 @@ import org.testng.annotations.Test;
 
 import java.util.List;
 
-import static com.campusconnect.neo4j.tests.DataBrewer.getFakeUser;
+import static com.campusconnect.neo4j.tests.functional.base.DataBrewer.getFakeUser;
 
 /**
  * Created by sn1 on 1/22/15.
@@ -42,7 +43,7 @@ public class UserCollegeTest extends TestBase {
 
         System.err.println("college-id:" + createdCollege.getId() + " userId:" + user.getId());
 
-        userResource.approveCollegeAccess(createdUser.getId(), createdCollege.getId(), createdUser.getId(), AccessRoles.READ.toString());
+//        userResource.approveCollegeAccess(createdUser.getId(), createdCollege.getId(), createdUser.getId(), AccessRoles.READ.toString());
 
     }
 

@@ -16,11 +16,9 @@
 		                   http://www.springframework.org/schema/tx
 		                   http://www.springframework.org/schema/tx/spring-tx.xsd
 						   ">
-
     <context:annotation-config/>
     <neo4j:repositories base-package="com.campusconnect.neo4j.repositories" />
     <neo4j:config base-package="com.campusconnect.neo4j.types" graphDatabaseService="graphDatabaseService" />
-
 
     <bean id="graphDatabaseService"
           class="org.springframework.data.neo4j.rest.SpringRestGraphDatabase" name="graphDatabaseService">
@@ -55,8 +53,9 @@
 
     <bean class="com.campusconnect.neo4j.resources.UserResource">
         <constructor-arg index="0" ref="userDao"/>
-        <constructor-arg index="1" ref="collegeDao" />
+        <constructor-arg index="1" ref="bookDao" />
     </bean>
+
 
     <bean class="com.campusconnect.neo4j.resources.BookResource">
         <constructor-arg index="0" ref="bookDao"/>

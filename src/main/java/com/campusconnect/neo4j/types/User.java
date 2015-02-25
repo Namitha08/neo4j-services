@@ -6,12 +6,10 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.rest.graphdb.entity.RestNode;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.neo4j.annotation.GraphId;
-import org.springframework.data.neo4j.annotation.Indexed;
-import org.springframework.data.neo4j.annotation.NodeEntity;
-import org.springframework.data.neo4j.annotation.RelatedTo;
+import org.springframework.data.neo4j.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by sn1 on 1/17/15.
@@ -25,8 +23,22 @@ public class User {
 
     @Indexed(unique=true)
     private String id;
+    
     private String name;
-    private String email;
+    private String email; 
+    
+    @Fetch
+    private Set<Address> addresses;
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    private String phone;
 
     public DateTime getCreatedDate() {
         return createdDate;
@@ -39,12 +51,34 @@ public class User {
     @CreatedDate
     private DateTime createdDate;
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "nodeId=" + nodeId +
+                ", id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", addresses=" + addresses +
+                ", phone='" + phone + '\'' +
+                ", createdDate=" + createdDate +
+                '}';
+    }
+
+    public Set<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(Set<Address> addresses) {
+        this.addresses = addresses;
+    }
+
     public User(String name, String email) {
         this.name = name;
         this.email = email;
     }
 
     public User() {
+        
     }
 
     public String getId() {
@@ -79,13 +113,4 @@ public class User {
         this.nodeId = nodeId;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "nodeId=" + nodeId +
-                ", id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                '}';
-    }
 }

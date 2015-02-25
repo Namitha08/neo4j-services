@@ -22,15 +22,13 @@ public class BookResource {
     }
 
     @POST
-    public Response createBook(Book book)
-    {
+    public Response createBook(Book book) {
         Book createdBook = bookDao.createBook(book);
         return Response.created(null).entity(createdBook).build();
     }
 
     @GET
-    public Response getBook(String id)
-    {
+    public Response getBook(String id) {
         Book book = bookDao.getBook(id);
         return Response.ok().entity(book).build();
     }

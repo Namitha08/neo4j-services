@@ -1,6 +1,7 @@
-package com.campusconnect.neo4j.tests;
+package com.campusconnect.neo4j.tests.unit;
 
 import com.campusconnect.neo4j.da.CollegeDao;
+import com.campusconnect.neo4j.tests.TestBase;
 import com.campusconnect.neo4j.types.College;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.Test;

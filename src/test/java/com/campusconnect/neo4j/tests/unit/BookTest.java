@@ -1,12 +1,12 @@
-package com.campusconnect.neo4j.tests;
+package com.campusconnect.neo4j.tests.unit;
 
 import com.campusconnect.neo4j.da.BookDao;
+import com.campusconnect.neo4j.tests.TestBase;
+import com.campusconnect.neo4j.tests.functional.base.DataBrewer;
 import com.campusconnect.neo4j.types.Book;
 import org.springframework.beans.factory.annotation.Autowired;
 import static org.testng.Assert.*;
 import org.testng.annotations.Test;
-
-import static com.campusconnect.neo4j.tests.DataBrewer.*;
 
 /**
  * Created by I308260 on 2/17/2015.
@@ -19,7 +19,7 @@ public class BookTest extends TestBase {
 
     @Test
     public void createBook(){
-        createdBook = bookDao.createBook(getFakeBook());
+        createdBook = bookDao.createBook(DataBrewer.getFakeBook());
        // assert book.getId() != null;
         assertNotNull(createdBook.getId(),"no id created when a new book is created");
         assertNotNull(createdBook.getNodeId(),"no node id created when a new book is created");

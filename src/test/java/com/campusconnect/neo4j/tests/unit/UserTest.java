@@ -1,17 +1,14 @@
-package com.campusconnect.neo4j.tests;
+package com.campusconnect.neo4j.tests.unit;
 
 import com.campusconnect.neo4j.da.UserDao;
+import com.campusconnect.neo4j.tests.TestBase;
 import com.campusconnect.neo4j.types.User;
-import com.campusconnect.neo4j.types.UserRelationType;
-import com.github.javafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
 import org.testng.annotations.Test;
 
 import java.util.List;
-import java.util.UUID;
 
-import static com.campusconnect.neo4j.tests.DataBrewer.*;
+import static com.campusconnect.neo4j.tests.functional.base.DataBrewer.*;
 
 /**
  * Created by sn1 on 1/18/15.
@@ -45,6 +42,13 @@ public class UserTest extends TestBase {
 
         User updatedUser = userDao.getUser(createdUser.getId());
         updatedUser.getName();
+    }
+    
+    @Test
+    public void createUserWithAddress() {
+        createdUser = userDao.createUser(getFakeUserWithAddress());
+        User resultUser = userDao.getUser(createdUser.getId());
+        System.err.println(resultUser);
     }
 
     @Test

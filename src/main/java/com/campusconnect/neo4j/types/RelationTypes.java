@@ -7,5 +7,8 @@ public enum  RelationTypes {
     USER_ACCESS,
     CREATED_BY,
     LAST_MODIFIED_BY,
-
+    addresses,
+    WISH_LIST,
+    OWNS,
+    BORROWED,
 }
