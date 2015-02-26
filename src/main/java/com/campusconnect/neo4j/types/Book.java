@@ -26,6 +26,12 @@ public class Book {
         this.isbn = isbn;
     }
 
+    public Book(String id, String name, String isbn) {
+        this.id = id;
+        this.name = name;
+        this.isbn = isbn;
+    }
+
     public Long getNodeId() {
         return nodeId;
     }

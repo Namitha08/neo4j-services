@@ -1,14 +1,13 @@
 package com.campusconnect.neo4j.types;
 
-import org.joda.time.DateTime;
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.Node;
-import org.neo4j.rest.graphdb.entity.RestNode;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.neo4j.annotation.*;
 
-import java.util.List;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.neo4j.annotation.Fetch;
+import org.springframework.data.neo4j.annotation.GraphId;
+import org.springframework.data.neo4j.annotation.Indexed;
+import org.springframework.data.neo4j.annotation.NodeEntity;
+
 import java.util.Set;
 
 /**
@@ -21,14 +20,42 @@ public class User {
     @GraphId
     private Long nodeId;
 
-    @Indexed(unique=true)
+    @Indexed(unique = true)
     private String id;
-    
+
     private String name;
-    private String email; 
+    private String email;
     
+    @LastModifiedDate
+    private long lastModifiedDate;
     @Fetch
     private Set<Address> addresses;
+    private String phone;
+    @CreatedDate
+    private long createdDate;
+
+    public User(String name, String email, String phone) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+    }
+
+    public User(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    public User() {
+
+    }
+
+    public long getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(long lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
     public String getPhone() {
         return phone;
@@ -38,18 +65,13 @@ public class User {
         this.phone = phone;
     }
 
-    private String phone;
-
-    public DateTime getCreatedDate() {
+    public long getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(DateTime createdDate) {
+    public void setCreatedDate(long createdDate) {
         this.createdDate = createdDate;
     }
-
-    @CreatedDate
-    private DateTime createdDate;
 
     @Override
     public String toString() {
@@ -70,15 +92,6 @@ public class User {
 
     public void setAddresses(Set<Address> addresses) {
         this.addresses = addresses;
-    }
-
-    public User(String name, String email) {
-        this.name = name;
-        this.email = email;
-    }
-
-    public User() {
-        
     }
 
     public String getId() {

@@ -1,6 +1,6 @@
 package com.campusconnect.neo4j.types;
 
-import org.joda.time.DateTime;
+
 import org.springframework.data.annotation.CreatedDate;
 
 /**
@@ -9,5 +9,5 @@ import org.springframework.data.annotation.CreatedDate;
 public class AddressRelation {
     
     @CreatedDate
-    private DateTime createdDate;
+    private long createdDate;
 }

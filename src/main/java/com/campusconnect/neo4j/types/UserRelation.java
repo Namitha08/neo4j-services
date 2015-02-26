@@ -1,6 +1,6 @@
 package com.campusconnect.neo4j.types;
 
-import org.joda.time.DateTime;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.neo4j.annotation.*;
 
@@ -17,13 +17,13 @@ public abstract class UserRelation {
     private User user2;
 
     @CreatedDate
-    private DateTime createdDate;
+    private long createdDate;
 
-    public DateTime getCreatedDate() {
+    public long getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(DateTime createdDate) {
+    public void setCreatedDate(long createdDate) {
         this.createdDate = createdDate;
     }
 
@@ -52,7 +52,7 @@ public abstract class UserRelation {
     }
 
 
-    public UserRelation(User user1, User user2, DateTime createdDate) {
+    public UserRelation(User user1, User user2, long createdDate) {
         this.user1 = user1;
         this.user2 = user2;
         this.createdDate = createdDate;

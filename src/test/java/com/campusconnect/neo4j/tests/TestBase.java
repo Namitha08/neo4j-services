@@ -18,5 +18,6 @@ public class TestBase extends AbstractTestNGSpringContextTests {
         ResourceProvider provider = new ResourceProvider();
         resource = provider.getResource();
     }
+    
 }
 

@@ -59,5 +59,6 @@
 
     <bean class="com.campusconnect.neo4j.resources.BookResource">
         <constructor-arg index="0" ref="bookDao"/>
+        <constructor-arg index="1" ref="userDao"/>
     </bean>
 </beans>

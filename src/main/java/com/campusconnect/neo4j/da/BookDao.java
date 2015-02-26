@@ -2,11 +2,8 @@ package com.campusconnect.neo4j.da;
 
 import com.campusconnect.neo4j.repositories.BookRepository;
 import com.campusconnect.neo4j.repositories.OwnsRelationshipRepository;
-import com.campusconnect.neo4j.types.Book;
-import com.campusconnect.neo4j.types.OwnsRelationship;
-import com.campusconnect.neo4j.types.RelationTypes;
-import com.campusconnect.neo4j.types.User;
-import org.joda.time.DateTime;
+import com.campusconnect.neo4j.types.*;
+
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
@@ -60,7 +57,38 @@ public class BookDao {
         if(relationship == null) //todo: throw an exception
             return;
         relationship.setStatus(status);
-        relationship.setLastModifiedDate(new DateTime(System.currentTimeMillis()));
+        relationship.setLastModifiedDate(System.currentTimeMillis());
         neo4jTemplate.save(relationship);
     }
+
+    public void addBookToBorrower(User borrower, Book book, BorrowRequest borrowRequest) {
+        BorrowRelation borrowRelation = new BorrowRelation(borrower, book);
+        borrowRelation.setStatus("pending");
+        borrowRelation.setBorrowDate(borrowRequest.getBorrowDate());
+        borrowRelation.setContractPeriodInDays(borrowRequest.getContractPeriodInDays());
+        borrowRelation.setAdditionalComments(borrowRequest.getAdditionalMessage());
+        borrowRelation.setOwnerUserId(borrowRequest.getOwnerUserId());
+        neo4jTemplate.save(borrowRelation);
+    }
+
+    public void updateBookStatusOnAgreement(User user, Book book, User borrower) {
+        updateOwnedBookStatus(user, book, "locked");
+        updateBorrowedBookStatus(borrower, book, "agreed");
+    }
+    
+    public void updateBookStatusOnSuccess(User user, Book book, User borrower) {
+        updateOwnedBookStatus(user, book, "lent");
+        updateBorrowedBookStatus(borrower, book, "borrowed");
+    }
+
+    @Transactional
+    public void updateBorrowedBookStatus(User user, Book book, String status) {
+        BorrowRelation relationship = neo4jTemplate.getRelationshipBetween(user, book, BorrowRelation.class, RelationTypes.BORROWED.toString());
+        if(relationship == null) //todo: throw an exception
+            return;
+        relationship.setStatus(status);
+        relationship.setLastModifiedDate(System.currentTimeMillis());
+        neo4jTemplate.save(relationship);
+    }
+    
 }

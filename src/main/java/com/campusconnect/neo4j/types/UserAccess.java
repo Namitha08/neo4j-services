@@ -1,6 +1,6 @@
 package com.campusconnect.neo4j.types;
 
-import org.joda.time.DateTime;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.neo4j.annotation.RelationshipEntity;
 
@@ -16,7 +16,7 @@ public class UserAccess {
     }
 
     @CreatedDate
-    private DateTime createdDateTime;
+    private long createdlong;
 
     private String role;
 
@@ -25,12 +25,12 @@ public class UserAccess {
     public UserAccess() {
     }
 
-    public DateTime getCreatedDateTime() {
-        return createdDateTime;
+    public long getCreatedlong() {
+        return createdlong;
     }
 
-    public void setCreatedDateTime(DateTime createdDateTime) {
-        this.createdDateTime = createdDateTime;
+    public void setCreatedlong(long createdlong) {
+        this.createdlong = createdlong;
     }
 
     public String getRole() {

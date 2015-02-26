@@ -1,10 +1,8 @@
 package com.campusconnect.neo4j.tests.functional.base;
 
-import com.campusconnect.neo4j.types.Address;
-import com.campusconnect.neo4j.types.AddressType;
-import com.campusconnect.neo4j.types.Book;
-import com.campusconnect.neo4j.types.User;
+import com.campusconnect.neo4j.types.*;
 import com.github.javafaker.Faker;
+
 
 import java.util.*;
 
@@ -23,7 +21,7 @@ public class DataBrewer {
     }
     
     public static User getFakeUserWithAddress() {
-        User user = new User(faker.name().name(), faker.internet().emailAddress());
+        User user = new User(faker.name().name(), faker.internet().emailAddress(), faker.phoneNumber().phoneNumber());
         Set<Address> addresses = new HashSet<>();
         addresses.add(getFakeAddress(AddressType.HOME.toString()));
         user.setAddresses(addresses);
@@ -44,11 +42,15 @@ public class DataBrewer {
         address.setAddressLine1(faker.address().streetAddressNumber());
         address.setAddressLine2(faker.address().secondaryAddress());
         address.setAddressType(addressType);
-        address.setLandmark(faker.address().citySuffix());
-        address.setCity(faker.address().citySuffix());
+        address.setLandmark("landMark");
+        address.setCity(faker.address().cityPrefix() + " " + faker.address().citySuffix());
         address.setState(faker.address().stateAbbr());
         address.setCountry(faker.address().country());
         address.setZipCode(faker.address().zipCode());
         return address;
+    }
+    
+    public static BorrowRequest getBorrowRequest(String ownerId, String borrwerId){
+        return new BorrowRequest(ownerId, borrwerId, 25, System.currentTimeMillis(), "message");
     }
 }

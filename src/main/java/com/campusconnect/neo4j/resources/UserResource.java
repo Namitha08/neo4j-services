@@ -2,11 +2,8 @@ package com.campusconnect.neo4j.resources;
 
 import com.campusconnect.neo4j.da.BookDao;
 import com.campusconnect.neo4j.da.UserDao;
-import com.campusconnect.neo4j.types.Address;
-import com.campusconnect.neo4j.types.Book;
-import com.campusconnect.neo4j.types.OwnsRelationship;
-import com.campusconnect.neo4j.types.User;
-import org.joda.time.DateTime;
+import com.campusconnect.neo4j.types.*;
+
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
@@ -34,6 +31,9 @@ public class UserResource {
     
     @POST
     public Response createUser(final User user) throws URISyntaxException {
+        final long createdDate = System.currentTimeMillis();
+        user.setCreatedDate(createdDate);
+        user.setLastModifiedDate(createdDate);
         User createdUser = userDao.createUser(user);
         return Response.created(new URI("/user/" + createdUser.getId())).entity(createdUser).build();
     }
@@ -48,10 +48,11 @@ public class UserResource {
     @PUT
     @Path("{userId}")
     public Response updateUser(@PathParam("userId") final String userId, User user) {
+        user.setLastModifiedDate(System.currentTimeMillis());
         User updatedUser = userDao.updateUser(user);
-        return Response.ok().build();
+        return Response.ok().entity(updatedUser).build();
     }
-    
+
     @PUT
     @Path("{userId}/addresses")
     public Response addAddress(@PathParam("userId") final String userId, final Address address){
@@ -66,7 +67,7 @@ public class UserResource {
         
         User user = userDao.getUser(userId);
         Book book = bookDao.getBook(bookId);
-        DateTime now = new DateTime(System.currentTimeMillis());
+        long now = System.currentTimeMillis();
         bookDao.addBookToUser(new OwnsRelationship(user, book, now, status, now));
         return Response.ok().build();
     }
@@ -83,32 +84,58 @@ public class UserResource {
         bookDao.updateOwnedBookStatus(user, book, status);
         return Response.ok().build();
     }
+    
+    @GET
+    @Path("{userId}/books")
+    public Response getBooks(@PathParam("userId") final String userId, @QueryParam("filter") String filter) throws Exception {
+        if(filter == null){
+            throw new Exception("filer is null");
+        }
+        if(filter.equals("owned")){
+            final List<OwnedBook> ownedBooks = userDao.getOwnedBooks(userId);
+            OwnedBooksPage ownedBooksPage = new OwnedBooksPage(0, ownedBooks.size(), ownedBooks);
+            return Response.ok().entity(ownedBooksPage).build();
+        } else if(filter.equals("available")) {
+            final List<OwnedBook> ownedBooks = userDao.getAvailableBooks(userId);
+            OwnedBooksPage ownedBooksPage = new OwnedBooksPage(0, ownedBooks.size(), ownedBooks);
+            return Response.ok().entity(ownedBooksPage).build();
+        } else if (filter.equals("lent")) {
+            final List<OwnedBook> ownedBooks = userDao.getLentBooks(userId);
+            OwnedBooksPage ownedBooksPage = new OwnedBooksPage(0, ownedBooks.size(), ownedBooks);
+            return Response.ok().entity(ownedBooksPage).build();
+        } else if (filter.equals("borrowed")) {
+            final List<BorrowedBook> borrowedBooks = userDao.getBorrowedBooks(userId);
+            BorrowedBooksPage borrowedBooksPage = new BorrowedBooksPage(0, borrowedBooks.size(), borrowedBooks);
+            return Response.ok().entity(borrowedBooksPage).build();
+        }
+        return Response.ok().build();
+    }
 
     private Map<String, Object> getHeadersForAddingBook(String status) {
         Map<String, Object> properties = new HashMap<>();
-        properties.put("createdDate", new DateTime(System.currentTimeMillis()));
+        properties.put("createdDate", System.currentTimeMillis());
         properties.put("status", status);
-        properties.put("lastModifiedDate", new DateTime(System.currentTimeMillis()));
+        properties.put("lastModifiedDate", System.currentTimeMillis());
         return properties;
     }
     private Map<String, Object> getHeadersForStatusUpdate(String status) {
         Map<String, Object> properties = new HashMap<>();
         properties.put("status", status);
-        properties.put("lastModifiedDate", new DateTime(System.currentTimeMillis()));
+        properties.put("lastModifiedDate", System.currentTimeMillis());
         return properties;
     }
     
     private Map<String, Object> getRequiredHeadersForAccess(String createdBy, String role) {
         Map<String, Object> properties = new HashMap<>();
         properties.put("createdBy", createdBy);
-        properties.put("createdDate", new DateTime(System.currentTimeMillis()));
+        properties.put("createdDate", System.currentTimeMillis());
         properties.put("role", role);
         return properties;
     }
 
     private Map<String, Object> getRequiredHeadersForAddressLink(String addressType) {
         Map<String, Object> properties = new HashMap<>();
-        properties.put("createdDate", new DateTime(System.currentTimeMillis()));
+        properties.put("createdDate", System.currentTimeMillis());
         properties.put("type", addressType);
         return properties;
     }

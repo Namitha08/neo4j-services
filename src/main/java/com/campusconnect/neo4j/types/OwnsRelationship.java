@@ -1,6 +1,6 @@
 package com.campusconnect.neo4j.types;
 
-import org.joda.time.DateTime;
+
 import org.springframework.data.neo4j.annotation.EndNode;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.RelationshipEntity;
@@ -13,14 +13,47 @@ import org.springframework.data.neo4j.annotation.StartNode;
 public class OwnsRelationship {
     @GraphId
     private Long id;
-    
+
     @StartNode
     private User user;
-    
+
     @EndNode
     private Book book;
+    private long createdDate;
+    private String status;
+    private long lastModifiedDate;
+    
+    private String borrowerId;
+    
+    private String dueDate;
+    private int contractPeriodInDays;
 
-    public OwnsRelationship(User user, Book book, DateTime createdDate, String status, DateTime lastModifiedDate) {
+    public String getBorrowerId() {
+        return borrowerId;
+    }
+
+    public String getDueDate() {
+        return dueDate;
+    }
+
+    public int getContractPeriodInDays() {
+        return contractPeriodInDays;
+    }
+
+    public void setBorrowerId(String borrowerId) {
+
+        this.borrowerId = borrowerId;
+    }
+
+    public void setDueDate(String dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public void setContractPeriodInDays(int contractPeriodInDays) {
+        this.contractPeriodInDays = contractPeriodInDays;
+    }
+
+    public OwnsRelationship(User user, Book book, long createdDate, String status, long lastModifiedDate) {
         this.user = user;
         this.book = book;
         this.createdDate = createdDate;
@@ -55,15 +88,11 @@ public class OwnsRelationship {
         this.book = book;
     }
 
-    private DateTime createdDate;
-    private String status;
-    private DateTime lastModifiedDate;
-
-    public DateTime getCreatedDate() {
+    public long getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(DateTime createdDate) {
+    public void setCreatedDate(long createdDate) {
         this.createdDate = createdDate;
     }
 
@@ -75,11 +104,11 @@ public class OwnsRelationship {
         this.status = status;
     }
 
-    public DateTime getLastModifiedDate() {
+    public long getLastModifiedDate() {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(DateTime lastModifiedDate) {
+    public void setLastModifiedDate(long lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 }
