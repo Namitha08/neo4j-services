@@ -20,9 +20,11 @@ public class User {
     @GraphId
     private Long nodeId;
 
-    @Indexed(unique = true)
+    @Indexed(indexName="index_by_user_id", unique = true)
     private String id;
 
+    @Indexed(indexName="index_by_fb_id", unique = true)
+    private String fbId;
     private String name;
     private String email;
     
@@ -47,6 +49,14 @@ public class User {
 
     public User() {
 
+    }
+
+    public String getFbId() {
+        return fbId;
+    }
+
+    public void setFbId(String fbId) {
+        this.fbId = fbId;
     }
 
     public long getLastModifiedDate() {
@@ -125,5 +135,4 @@ public class User {
     public void setNodeId(Long nodeId) {
         this.nodeId = nodeId;
     }
-
 }

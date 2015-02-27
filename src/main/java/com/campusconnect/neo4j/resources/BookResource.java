@@ -65,4 +65,5 @@ public class BookResource {
             bookDao.updateBookStatusOnSuccess(user, book, borrower);
         return Response.ok().build();
     }
+    
 }
