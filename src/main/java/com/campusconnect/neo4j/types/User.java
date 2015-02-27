@@ -20,10 +20,10 @@ public class User {
     @GraphId
     private Long nodeId;
 
-    @Indexed(indexName="index_by_user_id", unique = true)
+    @Indexed(unique = true)
     private String id;
 
-    @Indexed(indexName="index_by_fb_id", unique = true)
+    @Indexed()
     private String fbId;
     private String name;
     private String email;
