@@ -1,7 +1,9 @@
 package com.campusconnect.neo4j.da;
 
+import com.campusconnect.neo4j.da.iface.UserDao;
 import com.campusconnect.neo4j.repositories.UserRepository;
 import com.campusconnect.neo4j.types.*;
+import com.googlecode.ehcache.annotations.*;
 import org.neo4j.rest.graphdb.entity.RestNode;
 import org.neo4j.rest.graphdb.entity.RestRelationship;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,42 +15,55 @@ import java.util.*;
 /**
  * Created by sn1 on 1/19/15.
  */
-public class UserDao {
+public class UserDaoImpl implements UserDao {
 
     @Autowired
     UserRepository userRepository;
     private Neo4jTemplate neo4jTemplate;
 
-    public UserDao(Neo4jTemplate neo4jTemplate) {
+    public UserDaoImpl(Neo4jTemplate neo4jTemplate) {
         this.neo4jTemplate = neo4jTemplate;
     }
 
+    @Override
     public User createUser(User user) {
         user.setId(UUID.randomUUID().toString());
         return neo4jTemplate.save(user);
     }
-
+    
+    @Override
+    @Cacheable(cacheName = "userIdCache", keyGenerator = @KeyGenerator(name="HashCodeCacheKeyGenerator", properties = @Property( name="includeMethod", value="false")))
     public User getUser(String userId) {
         return userRepository.findBySchemaPropertyValue("id", userId);
     }
+    
+    @Override
+    public User getUserByFbId(String fbId) {
+        return userRepository.findBySchemaPropertyValue("fbId", fbId);
+    }
 
+    @Override
     public void createFollowingRelation(User user1, User user2) {
-
         neo4jTemplate.createRelationshipBetween(user1, user2, FollowingRelation.class, UserRelationType.FOLLOWING.toString(), false);
     }
 
-    public User updateUser(User user) {
+    @Override
+    @TriggersRemove(cacheName = "userIdCache", keyGenerator = @KeyGenerator(name="HashCodeCacheKeyGenerator", properties = @Property( name="includeMethod", value="false")))
+    public User updateUser(@PartialCacheKey String userId, User user) {
         return neo4jTemplate.save(user);
     }
 
+    @Override
     public List<User> getFollowers(User user) {
         return userRepository.getFollowers(user.getId());
     }
 
+    @Override
     public List<User> getFollowing(User user) {
         return userRepository.getFollowing(user.getId());
     }
 
+    @Override
     public List<OwnedBook> getOwnedBooks(String userId) {
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
@@ -58,6 +73,7 @@ public class UserDao {
         return getOwnedBooksFromResultMap(mapResult);
     }
 
+    @Override
     public List<OwnedBook> getAvailableBooks(String userId) {
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
@@ -67,6 +83,7 @@ public class UserDao {
         return getOwnedBooksFromResultMap(mapResult);
     }
     
+    @Override
     public List<OwnedBook> getLentBooks(String userId) {
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
@@ -87,6 +104,7 @@ public class UserDao {
         return ownedBooks;
     }
 
+    @Override
     public List<BorrowedBook> getBorrowedBooks(String userId) {
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);

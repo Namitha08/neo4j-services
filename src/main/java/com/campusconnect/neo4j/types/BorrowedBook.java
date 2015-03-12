@@ -29,14 +29,6 @@ public class BorrowedBook extends Book {
         this.lastModifiedDate = borrowRelation.getLastModifiedDate();
     }
 
-    public BorrowedBook(String status, long dueDate, String ownerUserId, long borrowDate) {
-
-        this.status = status;
-        this.dueDate = dueDate;
-        this.ownerUserId = ownerUserId;
-        this.borrowDate = borrowDate;
-    }
-
     public BorrowedBook(String name, String isbn, String status, long dueDate, String ownerUserId, long borrowDate) {
         super(name, isbn);
         this.status = status;

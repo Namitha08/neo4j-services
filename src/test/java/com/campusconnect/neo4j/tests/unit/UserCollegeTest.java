@@ -1,10 +1,9 @@
 package com.campusconnect.neo4j.tests.unit;
 
 import com.campusconnect.neo4j.da.CollegeDao;
-import com.campusconnect.neo4j.da.UserDao;
+import com.campusconnect.neo4j.da.UserDaoImpl;
 import com.campusconnect.neo4j.resources.UserResource;
 import com.campusconnect.neo4j.tests.TestBase;
-import com.campusconnect.neo4j.types.AccessRoles;
 import com.campusconnect.neo4j.types.College;
 import com.campusconnect.neo4j.types.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ public class UserCollegeTest extends TestBase {
     private CollegeDao collegeDao;
 
     @Autowired
-    private UserDao userDao;
+    private UserDaoImpl userDaoImpl;
 
     @Autowired
     private UserResource  userResource;
@@ -39,7 +38,7 @@ public class UserCollegeTest extends TestBase {
         createdCollege = collegeDao.createCollege(college);
 
         User user = getFakeUser();
-        User createdUser = userDao.createUser(user);
+        User createdUser = userDaoImpl.createUser(user);
 
         System.err.println("college-id:" + createdCollege.getId() + " userId:" + user.getId());
 

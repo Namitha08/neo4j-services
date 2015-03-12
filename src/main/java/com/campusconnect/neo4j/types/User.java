@@ -8,6 +8,7 @@ import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.Indexed;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 
+import java.io.Serializable;
 import java.util.Set;
 
 /**
@@ -15,7 +16,7 @@ import java.util.Set;
  */
 
 @NodeEntity
-public class User {
+public class User implements Serializable {
 
     @GraphId
     private Long nodeId;
@@ -27,14 +28,48 @@ public class User {
     private String fbId;
     private String name;
     private String email;
-    
+
     @LastModifiedDate
     private long lastModifiedDate;
+    
     @Fetch
     private Set<Address> addresses;
     private String phone;
     @CreatedDate
     private long createdDate;
+
+    public void setGoodreadsAuthStatus(String goodreadsAuthStatus) {
+        this.goodreadsAuthStatus = goodreadsAuthStatus;
+    }
+
+    private String goodreadsAuthStatus;
+    private String goodreadsId;
+    private String goodreadsAccessToken;
+
+    public String getGoodreadsAccessTokenSecret() {
+        return goodreadsAccessTokenSecret;
+    }
+
+    public void setGoodreadsAccessTokenSecret(String goodreadsAccessTokenSecret) {
+        this.goodreadsAccessTokenSecret = goodreadsAccessTokenSecret;
+    }
+
+    private String goodreadsAccessTokenSecret;
+    public String getGoodreadsId() {
+        return goodreadsId;
+    }
+
+    public void setGoodreadsId(String goodreadsId) {
+        this.goodreadsId = goodreadsId;
+    }
+
+    public String getGoodreadsAccessToken() {
+        return goodreadsAccessToken;
+    }
+
+    public void setGoodreadsAccessToken(String goodreadsAccessToken) {
+        this.goodreadsAccessToken = goodreadsAccessToken;
+    }
 
     public User(String name, String email, String phone) {
         this.name = name;
@@ -134,5 +169,9 @@ public class User {
 
     public void setNodeId(Long nodeId) {
         this.nodeId = nodeId;
+    }
+
+    public String getGoodreadsAuthStatus() {
+        return goodreadsAuthStatus;
     }
 }

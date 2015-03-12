@@ -1,14 +1,16 @@
 package com.campusconnect.neo4j.resources;
 
-import com.campusconnect.neo4j.da.BookDao;
-import com.campusconnect.neo4j.da.UserDao;
+import com.campusconnect.neo4j.da.iface.BookDao;
+import com.campusconnect.neo4j.da.iface.UserDao;
 import com.campusconnect.neo4j.types.Book;
-import com.campusconnect.neo4j.types.BorrowRelation;
 import com.campusconnect.neo4j.types.BorrowRequest;
+import com.campusconnect.neo4j.types.SearchResult;
 import com.campusconnect.neo4j.types.User;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.util.UUID;
 
 /**
  * Created by I308260 on 2/19/2015.
@@ -28,6 +30,7 @@ public class BookResource {
 
     @POST
     public Response createBook(Book book) {
+        book.setId(UUID.randomUUID().toString());
         Book createdBook = bookDao.createBook(book);
         return Response.created(null).entity(createdBook).build();
     }
@@ -36,6 +39,13 @@ public class BookResource {
     @Path("{bookId}")
     public Response getBook(@PathParam("bookId") String bookId) {
         Book book = bookDao.getBook(bookId);
+        return Response.ok().entity(book).build();
+    }
+    
+    @GET
+    @Path("goodreadsId/{goodreadsId}")
+    public Response getBookByGoodreadsId(@PathParam("goodreadsId") final String goodreadsId ) throws IOException {
+        Book book = bookDao.getBookByGoodreadsId(goodreadsId);
         return Response.ok().entity(book).build();
     }
     
@@ -64,6 +74,13 @@ public class BookResource {
         else if(status.equals("success"))
             bookDao.updateBookStatusOnSuccess(user, book, borrower);
         return Response.ok().build();
+    }
+    
+    @GET
+    @Path("search")
+    public Response search(@QueryParam("q") final String queryString) {
+        SearchResult searchResult = bookDao.search(queryString);
+        return Response.ok().entity(searchResult).build();
     }
     
 }

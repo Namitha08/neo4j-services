@@ -1,66 +1,65 @@
 package com.campusconnect.neo4j.da;
 
+import com.campusconnect.neo4j.da.iface.BookDao;
 import com.campusconnect.neo4j.repositories.BookRepository;
 import com.campusconnect.neo4j.repositories.OwnsRelationshipRepository;
 import com.campusconnect.neo4j.types.*;
-
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.RelationshipType;
-import org.neo4j.graphdb.traversal.TraversalDescription;
+import com.googlecode.ehcache.annotations.Cacheable;
+import com.googlecode.ehcache.annotations.KeyGenerator;
+import com.googlecode.ehcache.annotations.Property;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.neo4j.conversion.Result;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Map;
-import java.util.UUID;
+import java.io.IOException;
 
 /**
  * Created by sn1 on 2/16/15.
  */
-public class BookDao {
+public class BookDaoImpl implements BookDao {
 
     private Neo4jTemplate neo4jTemplate;
+    private GoodreadsDao goodreadsDao;
 
     @Autowired
     BookRepository bookRepository;
-    
+
     @Autowired
     OwnsRelationshipRepository ownsRelationshipRepository;
 
-    public BookDao(Neo4jTemplate neo4jTemplate) {
+    public BookDaoImpl(Neo4jTemplate neo4jTemplate, GoodreadsDao goodreadsDao) {
         this.neo4jTemplate = neo4jTemplate;
+        this.goodreadsDao = goodreadsDao;
     }
-    
 
-    public Book createBook(Book book)
-    {
-        book.setId(UUID.randomUUID().toString());
+
+    @Override
+    public Book createBook(Book book) {
         return neo4jTemplate.save(book);
     }
 
+    @Override
     public Book getBook(String bookId) {
         return bookRepository.findBySchemaPropertyValue("id", bookId);
     }
-    
+
+    @Override
     public void addBookToUser(OwnsRelationship ownsRelationship) {
         neo4jTemplate.save(ownsRelationship);
     }
-    
+
+    @Override
     @Transactional
     public void updateOwnedBookStatus(User user, Book book, String status) {
         OwnsRelationship relationship = neo4jTemplate.getRelationshipBetween(user, book, OwnsRelationship.class, RelationTypes.OWNS.toString());
-        if(relationship == null) //todo: throw an exception
+        if (relationship == null) //todo: throw an exception
             return;
         relationship.setStatus(status);
         relationship.setLastModifiedDate(System.currentTimeMillis());
         neo4jTemplate.save(relationship);
     }
 
+    @Override
     public void addBookToBorrower(User borrower, Book book, BorrowRequest borrowRequest) {
         BorrowRelation borrowRelation = new BorrowRelation(borrower, book);
         borrowRelation.setStatus("pending");
@@ -71,24 +70,47 @@ public class BookDao {
         neo4jTemplate.save(borrowRelation);
     }
 
+    @Override
     public void updateBookStatusOnAgreement(User user, Book book, User borrower) {
         updateOwnedBookStatus(user, book, "locked");
         updateBorrowedBookStatus(borrower, book, "agreed");
     }
-    
+
+    @Override
     public void updateBookStatusOnSuccess(User user, Book book, User borrower) {
         updateOwnedBookStatus(user, book, "lent");
         updateBorrowedBookStatus(borrower, book, "borrowed");
     }
 
+    @Override
     @Transactional
     public void updateBorrowedBookStatus(User user, Book book, String status) {
         BorrowRelation relationship = neo4jTemplate.getRelationshipBetween(user, book, BorrowRelation.class, RelationTypes.BORROWED.toString());
-        if(relationship == null) //todo: throw an exception
+        if (relationship == null) //todo: throw an exception
             return;
         relationship.setStatus(status);
         relationship.setLastModifiedDate(System.currentTimeMillis());
         neo4jTemplate.save(relationship);
     }
+
+    @Override
+    public SearchResult search(String queryString) {
+        return goodreadsDao.search(queryString);
+    }
+
+    @Override
+    @Cacheable(cacheName = "bookByGRIdCache", keyGenerator = @KeyGenerator(name="HashCodeCacheKeyGenerator", properties = @Property( name="includeMethod", value="false")))
+    public Book getBookByGoodreadsId(String goodreadsId) throws IOException {
+        try {
+            Book book = bookRepository.findBySchemaPropertyValue("goodreadsId", goodreadsId);
+            if(book == null)
+                return goodreadsDao.getBookById(goodreadsId);
+        } catch (Exception e) {
+           //Todo : if exception is not found search in goodreads
+            return goodreadsDao.getBookById(goodreadsId);
+        }
+        return null;
+    }
     
+
 }

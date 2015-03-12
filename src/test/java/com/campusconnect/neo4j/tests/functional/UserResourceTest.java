@@ -42,6 +42,14 @@ public class UserResourceTest extends TestBase {
         assert getClientResponse.getStatus() == 200;
         User updatedUser = getClientResponse.getEntity(User.class);
 //        assert updatedUser.getName().equals("Updated name");
+
+        Fields fields = new Fields();
+        Field field = new Field("goodreadsId", "abc");
+        Field field1 = new Field("goodreadsAccessToken", "xyz");
+        fields.getFields().add(field);
+        fields.getFields().add(field1);
+        ClientResponse updateFieldsClientResponse = resource.path("users").path(createdUser.getId()).path("fields").type("application/json").entity(fields).put(ClientResponse.class);
+        assert updateFieldsClientResponse.getStatus() == 200;
     }
     
     @Test(dependsOnMethods = "testCompleteUserFlow")

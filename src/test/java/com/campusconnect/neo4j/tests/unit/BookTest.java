@@ -1,6 +1,6 @@
 package com.campusconnect.neo4j.tests.unit;
 
-import com.campusconnect.neo4j.da.BookDao;
+import com.campusconnect.neo4j.da.iface.BookDao;
 import com.campusconnect.neo4j.tests.TestBase;
 import com.campusconnect.neo4j.tests.functional.base.DataBrewer;
 import com.campusconnect.neo4j.types.Book;

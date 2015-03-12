@@ -1,6 +1,6 @@
 package com.campusconnect.neo4j.tests.unit;
 
-import com.campusconnect.neo4j.da.UserDao;
+import com.campusconnect.neo4j.da.UserDaoImpl;
 import com.campusconnect.neo4j.tests.TestBase;
 import com.campusconnect.neo4j.types.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,77 +17,77 @@ public class UserTest extends TestBase {
 
 
     @Autowired
-    private UserDao userDao;
+    private UserDaoImpl userDaoImpl;
 
     User createdUser;
 
     @Test
     public void createTest(){
-        createdUser = userDao.createUser(getFakeUser());
+        createdUser = userDaoImpl.createUser(getFakeUser());
     }
 
     @Test(dependsOnMethods = "createTest")
     public void getUser(){
-        User resultUser = userDao.getUser(createdUser.getId());
+        User resultUser = userDaoImpl.getUser(createdUser.getId());
         System.err.println(resultUser);
     }
 
     @Test(dependsOnMethods = "getUser")
     public void updateUser(){
-        User resultUser = userDao.getUser(createdUser.getId());
+        User resultUser = userDaoImpl.getUser(createdUser.getId());
 
         System.out.println(resultUser);
         resultUser.setName("abc");
-        userDao.updateUser(resultUser);
+        userDaoImpl.updateUser(resultUser.getId(), resultUser);
 
-        User updatedUser = userDao.getUser(createdUser.getId());
+        User updatedUser = userDaoImpl.getUser(createdUser.getId());
         updatedUser.getName();
     }
     
     @Test
     public void createUserWithAddress() {
-        createdUser = userDao.createUser(getFakeUserWithAddress());
-        User resultUser = userDao.getUser(createdUser.getId());
+        createdUser = userDaoImpl.createUser(getFakeUserWithAddress());
+        User resultUser = userDaoImpl.getUser(createdUser.getId());
         System.err.println(resultUser);
     }
 
     @Test
     public void addFollowerToFixedIdUser(){
-        User fixedIdUser = userDao.getUser("8318f66b-c836-4c89-888b-97dc72927e78");
-        User secondUser = userDao.createUser(getFakeUser());
-        userDao.createFollowingRelation(fixedIdUser, secondUser);
+        User fixedIdUser = userDaoImpl.getUser("8318f66b-c836-4c89-888b-97dc72927e78");
+        User secondUser = userDaoImpl.createUser(getFakeUser());
+        userDaoImpl.createFollowingRelation(fixedIdUser, secondUser);
     }
 
     @Test
     public void addFollowingToFixedIdUser(){
-        User fixedIdUser = userDao.getUser("8318f66b-c836-4c89-888b-97dc72927e78");
-        User secondUser = userDao.createUser(getFakeUser());
-        userDao.createFollowingRelation(secondUser, fixedIdUser);
+        User fixedIdUser = userDaoImpl.getUser("8318f66b-c836-4c89-888b-97dc72927e78");
+        User secondUser = userDaoImpl.createUser(getFakeUser());
+        userDaoImpl.createFollowingRelation(secondUser, fixedIdUser);
     }
 
     @Test(dependsOnMethods = "getUser")
     public void addFollower(){
-        User secondUser = userDao.createUser(getFakeUser());
-        userDao.createFollowingRelation(createdUser, secondUser);
+        User secondUser = userDaoImpl.createUser(getFakeUser());
+        userDaoImpl.createFollowingRelation(createdUser, secondUser);
     }
 
     @Test(dependsOnMethods = "getUser")
     public void addFollowing(){
-        User secondUser = userDao.createUser(getFakeUser());
-        userDao.createFollowingRelation(secondUser, createdUser);
+        User secondUser = userDaoImpl.createUser(getFakeUser());
+        userDaoImpl.createFollowingRelation(secondUser, createdUser);
     }
 
     @Test
     public void getFollowers(){
-        User fixedIdUser = userDao.getUser("8318f66b-c836-4c89-888b-97dc72927e78");
-        List<User> users = userDao.getFollowers(fixedIdUser);
+        User fixedIdUser = userDaoImpl.getUser("8318f66b-c836-4c89-888b-97dc72927e78");
+        List<User> users = userDaoImpl.getFollowers(fixedIdUser);
         System.out.println(users);
     }
 
     @Test
     public void getFollowing(){
-        User fixedIdUser = userDao.getUser("8318f66b-c836-4c89-888b-97dc72927e78");
-        List<User> users = userDao.getFollowers(fixedIdUser);
+        User fixedIdUser = userDaoImpl.getUser("8318f66b-c836-4c89-888b-97dc72927e78");
+        List<User> users = userDaoImpl.getFollowers(fixedIdUser);
         System.out.println(users);
     }
 }

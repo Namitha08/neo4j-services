@@ -1,8 +1,10 @@
 package com.campusconnect.neo4j.resources;
 
-import com.campusconnect.neo4j.da.BookDao;
-import com.campusconnect.neo4j.da.UserDao;
+import com.campusconnect.neo4j.da.*;
+import com.campusconnect.neo4j.da.iface.BookDao;
+import com.campusconnect.neo4j.da.iface.UserDao;
 import com.campusconnect.neo4j.types.*;
+import org.apache.commons.beanutils.BeanUtils;
 
 
 import javax.ws.rs.*;
@@ -20,28 +22,71 @@ import java.util.*;
 public class UserResource {
     private UserDao userDao;
     private BookDao bookDao;
-    
+    private FBDao fbDao;
+    private GoodreadsDao goodreadsDao;
+
     public UserResource() {
+    
     }
 
-    public UserResource(UserDao userDao, BookDao bookDao) {
+    public UserResource(UserDao userDao, BookDao bookDao, FBDao fbDao, GoodreadsDao goodreadsDao) {
         this.userDao = userDao;
         this.bookDao = bookDao;
+        this.fbDao = fbDao;
+        this.goodreadsDao = goodreadsDao;
     }
-    
+
     @POST
-    public Response createUser(final User user) throws URISyntaxException {
-        final long createdDate = System.currentTimeMillis();
-        user.setCreatedDate(createdDate);
-        user.setLastModifiedDate(createdDate);
+    public Response createUser(@QueryParam("accessToken") final String accessToken, final User user) throws URISyntaxException {
+        addPropertiesForCreate(user);
         User createdUser = userDao.createUser(user);
         return Response.created(new URI("/user/" + createdUser.getId())).entity(createdUser).build();
     }
     
+    
+    @PUT
+    @Path("{userId}/fields")
+    public Response updateUserFields(@PathParam("userId") final String userId, Fields fields) throws Exception {
+        //todo: validate passed fields are valid or not
+        User user = userDao.getUser(userId);
+        setUpdatedFields(user, fields);
+        checkWhetherSynchIsNeeded(fields);
+        user.setLastModifiedDate(System.currentTimeMillis());
+        User updatedUser = userDao.updateUser(userId, user);
+        return Response.ok().entity(updatedUser).build();
+    }
+
+    private void checkWhetherSynchIsNeeded(Fields fields) {
+        for (Field field : fields.getFields()) {
+            if(field.getName().contains("goodreadsAccessToken")) {
+
+            }
+            else if(field.getName().contains("fbId")) {
+                //todo kick off fb stuff
+            }
+        }
+    }
+
+    private void setUpdatedFields(User user, Fields fields) throws Exception {
+        for (Field field : fields.getFields()){
+            BeanUtils.setProperty(user, field.getName(), field.getValue());
+        }
+    }
+
     @GET
     @Path("{userId}")
     public Response getUser(@PathParam("userId") final String userId) {
         User user = userDao.getUser(userId);
+        return Response.ok().entity(user).build();
+    }
+    
+    @GET
+    @Path("fbId/{fbId}")
+    public Response getUserByFbId(@PathParam("fbId") final String fbId) {
+        User user = userDao.getUserByFbId(fbId);
+        if(user == null){
+            return Response.status(Response.Status.NOT_FOUND).entity(new Neo4jErrorResponse("NOT_FOUND", "client", "User is nto found with fbId : " + fbId)).build();
+        }
         return Response.ok().entity(user).build();
     }
 
@@ -49,7 +94,7 @@ public class UserResource {
     @Path("{userId}")
     public Response updateUser(@PathParam("userId") final String userId, User user) {
         user.setLastModifiedDate(System.currentTimeMillis());
-        User updatedUser = userDao.updateUser(user);
+        User updatedUser = userDao.updateUser(userId, user);
         return Response.ok().entity(updatedUser).build();
     }
 
@@ -111,6 +156,12 @@ public class UserResource {
         return Response.ok().build();
     }
 
+    private void addPropertiesForCreate(User user) {
+        final long createdDate = System.currentTimeMillis();
+        user.setCreatedDate(createdDate);
+        user.setLastModifiedDate(createdDate);
+    }
+    
     private Map<String, Object> getHeadersForAddingBook(String status) {
         Map<String, Object> properties = new HashMap<>();
         properties.put("createdDate", System.currentTimeMillis());
@@ -157,8 +208,6 @@ public class UserResource {
         }
         return null;
     }
-    
-    
 
     //    public void approveCollegeAccess(String userId, String collegeId, String createdBy, String role){
 //        User user = userDao.getUser(userId);
