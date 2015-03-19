@@ -50,16 +50,16 @@ public class UserResource {
         //todo: validate passed fields are valid or not
         User user = userDao.getUser(userId);
         setUpdatedFields(user, fields);
-        checkWhetherSynchIsNeeded(fields);
         user.setLastModifiedDate(System.currentTimeMillis());
         User updatedUser = userDao.updateUser(userId, user);
+        checkWhetherSynchIsNeeded(updatedUser, fields);
         return Response.ok().entity(updatedUser).build();
     }
 
-    private void checkWhetherSynchIsNeeded(Fields fields) {
+    private void checkWhetherSynchIsNeeded(User user, Fields fields) {
         for (Field field : fields.getFields()) {
-            if(field.getName().contains("goodreadsAccessToken")) {
-
+            if(field.getName().contains("goodreadsAccessTokenSecret")) {
+                goodreadsDao.getAndSaveBooksFromGoodreads(user.getGoodreadsId(), user.getGoodreadsAccessToken(), user.getGoodreadsAccessTokenSecret());
             }
             else if(field.getName().contains("fbId")) {
                 //todo kick off fb stuff

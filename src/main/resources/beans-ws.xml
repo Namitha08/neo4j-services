@@ -51,6 +51,7 @@
     <bean class="com.campusconnect.neo4j.akka.goodreads.GoodreadsAsynchHandler" id="goodreadsAsynchHandler">
         <property name="successListener" ref="grSuccessListener"/>
         <property name="saveBooksToDbRouter" ref="saveBookToDbWorker" />
+        <property name="getAndSaveBooksRouter" ref="getBooksWorker"/>
     </bean>
 
     <bean id="goodreadsDao" class="com.campusconnect.neo4j.da.GoodreadsDao">
@@ -110,14 +111,13 @@
         <!-- actor system name -->
         <property name="name" value="MyActorSystem"/>
         <!-- actor system configuration -->
-        <!--<property name="config">-->
-            <!--<bean class="com.typesafe.config.ConfigFactory" factory-method="load">-->
-                <!--<constructor-arg value="akkaActor.conf"/>-->
-            <!--</bean>-->
-        <!--</property>-->
+        <property name="config">
+            <bean class="com.typesafe.config.ConfigFactory" factory-method="load">
+                <constructor-arg value="akkaActor.conf"/>
+            </bean>
+        </property>
     </bean>
 
-    
     <bean id="getFriendsRouter" class="com.github.sabomichal.akkaspringfactory.ActorFactoryBean">
         <property name="actorSystem" ref="actorSystem"/>
         <property name="actorClass" value="com.campusconnect.neo4j.akka.facebook.worker.GetFriendsWorker"/>

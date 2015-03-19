@@ -3,6 +3,7 @@ package com.campusconnect.neo4j.da;
 import com.campusconnect.neo4j.akka.goodreads.GoodreadsAsynchHandler;
 import com.campusconnect.neo4j.akka.goodreads.api.GetBook;
 import com.campusconnect.neo4j.akka.goodreads.api.Search;
+import com.campusconnect.neo4j.akka.goodreads.mappers.BookMapper;
 import com.campusconnect.neo4j.akka.goodreads.types.*;
 import com.campusconnect.neo4j.types.Book;
 import com.campusconnect.neo4j.types.SearchResult;
@@ -21,6 +22,10 @@ public class GoodreadsDao {
 
     public void setGoodreadsAsynchHandler(GoodreadsAsynchHandler goodreadsAsynchHandler) {
         this.goodreadsAsynchHandler = goodreadsAsynchHandler;
+    }
+
+    public void getAndSaveBooksFromGoodreads(String goodreadsUserId, String accessToken, String accessTokenSecret) {
+        goodreadsAsynchHandler.getAndSaveBooks(goodreadsUserId, accessToken, accessTokenSecret);
     }
 
     public void setSearch(Search search) {
@@ -67,40 +72,11 @@ public class GoodreadsDao {
 
     public Book getBookById(String goodreadsId) throws IOException {
         GetBookResponse getBookResponse = getBook.getBookById(goodreadsId);
-        final Book book = getBookFromBookResponse(getBookResponse);
-        if(book != null)
-            goodreadsAsynchHandler.saveBook(book);
-        return book;
+        return BookMapper.getBookFromGoodreadsBook(getBookResponse.getBook());
     }
     
     public Book getBookByISBN(String isbn) throws IOException {
         GetBookResponse getBookResponse = getBook.getBookByISBN(isbn);
-        return getBookFromBookResponse(getBookResponse);
+        return BookMapper.getBookFromGoodreadsBook(getBookResponse.getBook());
     }
-
-    private Book getBookFromBookResponse(GetBookResponse getBookResponse) {
-        Book book = new Book();
-
-        final com.campusconnect.neo4j.akka.goodreads.types.Book respBook = getBookResponse.getBook();
-        if(respBook != null){
-            final Author author = respBook.getAuthors().get(0);
-            if(author != null){
-                book.setAuthorName(author.getName());
-                book.setGoodreadsAuthorId(author.getId());    
-            }
-            book.setDescription(respBook.getDescription());
-            book.setGoodreadsId(Integer.valueOf(respBook.getId()));
-            book.setImageUrl(respBook.getImageUrl());
-            book.setIsbn(respBook.getIsbn());
-            book.setIsbn13(respBook.getIsbn13());
-            book.setName(respBook.getTitle());
-            book.setPublishedYear(Integer.valueOf(respBook.getPublicationYear()));
-            book.setPublisher(respBook.getPublisher());
-            book.setNumberOfPages(Integer.parseInt(respBook.getNumPages()));
-            return book;
-        }
-        return null;
-    }
-    
-    
 }

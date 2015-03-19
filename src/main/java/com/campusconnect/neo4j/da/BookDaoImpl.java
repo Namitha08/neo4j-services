@@ -1,5 +1,6 @@
 package com.campusconnect.neo4j.da;
 
+import com.campusconnect.neo4j.akka.goodreads.GoodreadsAsynchHandler;
 import com.campusconnect.neo4j.da.iface.BookDao;
 import com.campusconnect.neo4j.repositories.BookRepository;
 import com.campusconnect.neo4j.repositories.OwnsRelationshipRepository;
@@ -12,6 +13,7 @@ import org.springframework.data.neo4j.support.Neo4jTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * Created by sn1 on 2/16/15.
@@ -20,6 +22,7 @@ public class BookDaoImpl implements BookDao {
 
     private Neo4jTemplate neo4jTemplate;
     private GoodreadsDao goodreadsDao;
+    private GoodreadsAsynchHandler goodreadsAsynchHandler;
 
     @Autowired
     BookRepository bookRepository;
@@ -27,9 +30,10 @@ public class BookDaoImpl implements BookDao {
     @Autowired
     OwnsRelationshipRepository ownsRelationshipRepository;
 
-    public BookDaoImpl(Neo4jTemplate neo4jTemplate, GoodreadsDao goodreadsDao) {
+    public BookDaoImpl(Neo4jTemplate neo4jTemplate, GoodreadsDao goodreadsDao, GoodreadsAsynchHandler goodreadsAsynchHandler) {
         this.neo4jTemplate = neo4jTemplate;
         this.goodreadsDao = goodreadsDao;
+        this.goodreadsAsynchHandler = goodreadsAsynchHandler;
     }
 
 
@@ -103,14 +107,16 @@ public class BookDaoImpl implements BookDao {
     public Book getBookByGoodreadsId(String goodreadsId) throws IOException {
         try {
             Book book = bookRepository.findBySchemaPropertyValue("goodreadsId", goodreadsId);
-            if(book == null)
-                return goodreadsDao.getBookById(goodreadsId);
+            if(book == null) {
+                final Book bookByGoodreadId = goodreadsDao.getBookById(goodreadsId);
+                bookByGoodreadId.setId(UUID.randomUUID().toString());
+                goodreadsAsynchHandler.saveBook(bookByGoodreadId);
+                return bookByGoodreadId;     
+            }
         } catch (Exception e) {
            //Todo : if exception is not found search in goodreads
             return goodreadsDao.getBookById(goodreadsId);
         }
         return null;
     }
-    
-
 }

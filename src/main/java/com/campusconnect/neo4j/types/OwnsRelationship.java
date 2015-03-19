@@ -20,8 +20,9 @@ public class OwnsRelationship {
     @EndNode
     private Book book;
     private long createdDate;
-    private String status;
+    private String status;   //read, owns, available
     private long lastModifiedDate;
+    private String goodreadsStatus;
     
     private String borrowerId;
     
@@ -66,6 +67,15 @@ public class OwnsRelationship {
 
     public Long getId() {
         return id;
+    }
+
+    public OwnsRelationship(User user, Book book, long createdDate, String status, long lastModifiedDate, String goodreadsStatus) {
+        this.user = user;
+        this.book = book;
+        this.createdDate = createdDate;
+        this.status = status;
+        this.lastModifiedDate = lastModifiedDate;
+        this.goodreadsStatus = goodreadsStatus;
     }
 
     public void setId(Long id) {

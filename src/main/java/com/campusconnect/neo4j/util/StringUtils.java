@@ -5,6 +5,6 @@ package com.campusconnect.neo4j.util;
  */
 public class StringUtils {
     public static String cleanEmptyTags(String data){
-        return data.replaceAll("<[A-Z0-9a-z_]*>\\s+</[A-Z0-9a-z_]*>|.*nil=\"true\".*|.*<!\\[CDATA\\[\\]\\]>.*|<[A-Z0-9a-z_ ]*/>", "");
+        return data.replaceAll("<[A-Z0-9a-z_]*>\\s+</[A-Z0-9a-z_]*>|.*nil=\"true\".*|.*<!\\[CDATA\\[\\]\\]>.*|<[A-Z0-9a-z_ ]*/>|<br>|<br/>|<br />|<p>|</p>|<strong>|</strong>", "");
     }
 }
