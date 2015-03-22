@@ -24,8 +24,8 @@ public class GoodreadsDao {
         this.goodreadsAsynchHandler = goodreadsAsynchHandler;
     }
 
-    public void getAndSaveBooksFromGoodreads(String goodreadsUserId, String accessToken, String accessTokenSecret) {
-        goodreadsAsynchHandler.getAndSaveBooks(goodreadsUserId, accessToken, accessTokenSecret);
+    public void getAndSaveBooksFromGoodreads(String userId, String goodreadsUserId, String accessToken, String accessTokenSecret) {
+        goodreadsAsynchHandler.getAndSaveBooks(userId, goodreadsUserId, accessToken, accessTokenSecret);
     }
 
     public void setSearch(Search search) {

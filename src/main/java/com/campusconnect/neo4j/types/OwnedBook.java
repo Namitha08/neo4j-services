@@ -1,10 +1,12 @@
 package com.campusconnect.neo4j.types;
 
 
+import java.io.Serializable;
+
 /**
  * Created by sn1 on 2/25/15.
  */
-public class OwnedBook extends Book {
+public class OwnedBook extends Book implements Serializable {
 
     private long createdDate;
     private String status;

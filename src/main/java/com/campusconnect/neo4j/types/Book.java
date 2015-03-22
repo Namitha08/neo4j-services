@@ -4,11 +4,13 @@ import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.Indexed;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 
+import java.io.Serializable;
+
 /**
  * Created by sn1 on 2/16/15.
  */
 @NodeEntity
-public class Book {
+public class Book implements Serializable {
     @GraphId
     private Long nodeId;
 

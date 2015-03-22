@@ -21,9 +21,9 @@ public class BookMapper {
             book.setIsbn(goodreadsBook.getIsbn());
             book.setIsbn13(goodreadsBook.getIsbn13());
             book.setName(goodreadsBook.getTitle());
-            book.setPublishedYear(Integer.valueOf(goodreadsBook.getPublicationYear()));
+            book.setPublishedYear(Integer.valueOf(goodreadsBook.getPublicationYear() != null ? goodreadsBook.getPublicationYear() : "0"));
             book.setPublisher(goodreadsBook.getPublisher());
-            book.setNumberOfPages(Integer.parseInt(goodreadsBook.getNumPages()));
+            book.setNumberOfPages(Integer.parseInt(goodreadsBook.getNumPages() != null ? goodreadsBook.getNumPages() : "0"));
             return book;
         }
         return null;

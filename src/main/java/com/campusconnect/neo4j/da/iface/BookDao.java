@@ -34,4 +34,9 @@ public interface BookDao {
 
     @Cacheable(cacheName = "bookByGRIdCache", keyGenerator = @KeyGenerator(name="HashCodeCacheKeyGenerator", properties = @Property( name="includeMethod", value="false")))
     Book getBookByGoodreadsId(String goodreadsId) throws IOException;
+
+    public Book getBookByGoodreadsId(String goodreadsId, Book book);
+
+    public void addWishBookToUser(WishListRelationship wishListRelationship);
+    
 }

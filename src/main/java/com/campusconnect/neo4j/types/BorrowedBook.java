@@ -1,9 +1,11 @@
 package com.campusconnect.neo4j.types;
 
+import java.io.Serializable;
+
 /**
  * Created by sn1 on 2/26/15.
  */
-public class BorrowedBook extends Book {
+public class BorrowedBook extends Book implements Serializable {
     private String status;
     private long dueDate;
     private long createdDate;

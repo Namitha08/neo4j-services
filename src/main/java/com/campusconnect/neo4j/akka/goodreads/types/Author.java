@@ -32,8 +32,6 @@ public class Author {
     private String id;
     @JsonProperty("name")
     private String name;
-    @JsonProperty("role")
-    private List<Object> role = new ArrayList<Object>();
     @JsonProperty("image_url")
     private String imageUrl;
     @JsonProperty("small_image_url")
@@ -87,26 +85,6 @@ public class Author {
     @JsonProperty("name")
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * 
-     * @return
-     *     The role
-     */
-    @JsonProperty("role")
-    public List<Object> getRole() {
-        return role;
-    }
-
-    /**
-     * 
-     * @param role
-     *     The role
-     */
-    @JsonProperty("role")
-    public void setRole(List<Object> role) {
-        this.role = role;
     }
 
     /**

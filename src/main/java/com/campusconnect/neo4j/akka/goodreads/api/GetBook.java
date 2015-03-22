@@ -2,14 +2,9 @@ package com.campusconnect.neo4j.akka.goodreads.api;
 
 import com.campusconnect.neo4j.akka.goodreads.client.GoodReadsClient;
 import com.campusconnect.neo4j.akka.goodreads.types.GetBookResponse;
-import com.campusconnect.neo4j.akka.goodreads.types.SearchResponse;
-import com.campusconnect.neo4j.util.StringUtils;
+import com.campusconnect.neo4j.akka.goodreads.util.ResponseUtils;
 import com.sun.jersey.api.client.ClientResponse;
-import net.sf.json.JSON;
-import net.sf.json.xml.XMLSerializer;
 import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

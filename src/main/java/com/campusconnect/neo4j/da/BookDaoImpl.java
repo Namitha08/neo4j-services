@@ -7,6 +7,7 @@ import com.campusconnect.neo4j.repositories.OwnsRelationshipRepository;
 import com.campusconnect.neo4j.types.*;
 import com.googlecode.ehcache.annotations.Cacheable;
 import com.googlecode.ehcache.annotations.KeyGenerator;
+import com.googlecode.ehcache.annotations.PartialCacheKey;
 import com.googlecode.ehcache.annotations.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.support.Neo4jTemplate;
@@ -65,8 +66,7 @@ public class BookDaoImpl implements BookDao {
 
     @Override
     public void addBookToBorrower(User borrower, Book book, BorrowRequest borrowRequest) {
-        BorrowRelation borrowRelation = new BorrowRelation(borrower, book);
-        borrowRelation.setStatus("pending");
+        BorrowRelation borrowRelation = new BorrowRelation(borrower, book, "pending");
         borrowRelation.setBorrowDate(borrowRequest.getBorrowDate());
         borrowRelation.setContractPeriodInDays(borrowRequest.getContractPeriodInDays());
         borrowRelation.setAdditionalComments(borrowRequest.getAdditionalMessage());
@@ -118,5 +118,21 @@ public class BookDaoImpl implements BookDao {
             return goodreadsDao.getBookById(goodreadsId);
         }
         return null;
+    }
+
+    @Override
+    @Cacheable(cacheName = "bookByGRIdCache", keyGenerator = @KeyGenerator(name="HashCodeCacheKeyGenerator", properties = @Property( name="includeMethod", value="false")))
+    public Book getBookByGoodreadsId(@PartialCacheKey String goodreadsId, Book book) {
+        Book bookByGoodreadsId = bookRepository.findBySchemaPropertyValue("goodreadsId", goodreadsId);
+        if(bookByGoodreadsId == null) {
+            book.setId(UUID.randomUUID().toString());
+            return createBook(book);
+        }
+        return bookByGoodreadsId;
+    }
+
+    @Override
+    public void addWishBookToUser(WishListRelationship wishListRelationship) {
+        neo4jTemplate.save(wishListRelationship);
     }
 }

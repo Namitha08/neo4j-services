@@ -43,7 +43,8 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void createFollowingRelation(User user1, User user2) {
+    @TriggersRemove(cacheName = "userFollowing", keyGenerator = @KeyGenerator(name="HashCodeCacheKeyGenerator", properties = @Property( name="includeMethod", value="false")))
+    public void createFollowingRelation(@PartialCacheKey User user1, User user2) {
         neo4jTemplate.createRelationshipBetween(user1, user2, FollowingRelation.class, UserRelationType.FOLLOWING.toString(), false);
     }
 
@@ -54,16 +55,19 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    @Cacheable(cacheName = "userFollowers", keyGenerator = @KeyGenerator(name="HashCodeCacheKeyGenerator", properties = @Property( name="includeMethod", value="false")))
     public List<User> getFollowers(User user) {
         return userRepository.getFollowers(user.getId());
     }
 
     @Override
+    @Cacheable(cacheName = "userFollowing", keyGenerator = @KeyGenerator(name="HashCodeCacheKeyGenerator", properties = @Property( name="includeMethod", value="false")))
     public List<User> getFollowing(User user) {
         return userRepository.getFollowing(user.getId());
     }
 
     @Override
+    @Cacheable(cacheName = "userOwnedBooks", keyGenerator = @KeyGenerator(name="HashCodeCacheKeyGenerator", properties = @Property( name="includeMethod", value="false")))
     public List<OwnedBook> getOwnedBooks(String userId) {
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
@@ -105,11 +109,34 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    @Cacheable(cacheName = "userBorrowedBooks", keyGenerator = @KeyGenerator(name="HashCodeCacheKeyGenerator", properties = @Property( name="includeMethod", value="false")))
     public List<BorrowedBook> getBorrowedBooks(String userId) {
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
         Result<Map<String, Object>> mapResult = neo4jTemplate.query("match (users:User {id: {userId}})-[relation:BORROWED]->(books:Book) return books, relation", params);
         return getBorrowedBooksFromResultMap(mapResult);
+    }
+
+    @Override
+    @Cacheable(cacheName = "userWishBooks", keyGenerator = @KeyGenerator(name="HashCodeCacheKeyGenerator", properties = @Property( name="includeMethod", value="false")))
+    public List<WishListBook> getWishListBooks(String userId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", userId);
+        Result<Map<String, Object>> mapResult = neo4jTemplate.query("match (users:User {id: {userId}})-[relation:WISH]->(books:Book) return books, relation", params);
+        return getWishListBooksFromResultMap(mapResult);
+    }
+
+    private List<WishListBook> getWishListBooksFromResultMap(Result<Map<String, Object>> mapResult) {
+        List<WishListBook> wishListBooks = new ArrayList<>();
+        for (Map<String, Object> objectMap : mapResult) {
+            RestNode bookNode = (RestNode) objectMap.get("books");
+            RestRelationship rawOwnsRelationship = (RestRelationship) objectMap.get("relation");
+
+            Book book = neo4jTemplate.convert(bookNode, Book.class);
+            WishListRelationship whishListRelationship = neo4jTemplate.convert(rawOwnsRelationship, WishListRelationship.class);
+            wishListBooks.add(new WishListBook(book, whishListRelationship));
+        }
+        return wishListBooks;
     }
 
     private List<BorrowedBook> getBorrowedBooksFromResultMap(Result<Map<String, Object>> mapResult) {
@@ -124,8 +151,4 @@ public class UserDaoImpl implements UserDao {
         }
         return borrowedBooks;
     }
-    
-    
-    
-    
 }

@@ -50,8 +50,9 @@
 
     <bean class="com.campusconnect.neo4j.akka.goodreads.GoodreadsAsynchHandler" id="goodreadsAsynchHandler">
         <property name="successListener" ref="grSuccessListener"/>
-        <property name="saveBooksToDbRouter" ref="saveBookToDbWorker" />
-        <property name="getAndSaveBooksRouter" ref="getBooksWorker"/>
+        <property name="saveBooksToDbRouter" ref="saveBookToDbRouter" />
+        <property name="getAndSaveBooksRouter" ref="getBooksRouter"/>
+        <property name="addGoodreadsBookToUserRouter" ref="addBooksToUserRouter" />
     </bean>
 
     <bean id="goodreadsDao" class="com.campusconnect.neo4j.da.GoodreadsDao">
@@ -63,6 +64,7 @@
     <bean class="com.campusconnect.neo4j.da.BookDaoImpl" id="bookDao">
         <constructor-arg index="0" ref="neo4jTemplate"/>
         <constructor-arg index="1" ref="goodreadsDao" />
+        <constructor-arg index="2" ref="goodreadsAsynchHandler" />
     </bean>
 
     <bean class="com.campusconnect.neo4j.resources.UserResource">
@@ -128,7 +130,18 @@
         </property>
     </bean>
     
-    <bean id="saveBookToDbWorker" class="com.github.sabomichal.akkaspringfactory.ActorFactoryBean">
+    <bean id="addBooksToUserRouter" class="com.github.sabomichal.akkaspringfactory.ActorFactoryBean">
+        <property name="actorSystem" ref="actorSystem"/>
+        <property name="actorClass" value="com.campusconnect.neo4j.akka.goodreads.worker.AddGoodreadsBookToUserWorker"/>
+        <property name="routerConfig">
+            <bean class="akka.routing.SmallestMailboxPool">
+                <constructor-arg value="${akka.friends.get.workers.count}"/>
+            </bean>
+        </property>
+    </bean>
+
+    
+    <bean id="saveBookToDbRouter" class="com.github.sabomichal.akkaspringfactory.ActorFactoryBean">
         <property name="actorSystem" ref="actorSystem"/>
         <property name="actorClass" value="com.campusconnect.neo4j.akka.goodreads.worker.SaveBooksToDbWorker"/>
         <property name="routerConfig">
@@ -138,7 +151,7 @@
         </property>
     </bean>
     
-    <bean id="getBooksWorker" class="com.github.sabomichal.akkaspringfactory.ActorFactoryBean">
+    <bean id="getBooksRouter" class="com.github.sabomichal.akkaspringfactory.ActorFactoryBean">
         <property name="actorSystem" ref="actorSystem"/>
         <property name="actorClass" value="com.campusconnect.neo4j.akka.goodreads.worker.GetBooksWorker"/>
         <property name="routerConfig">

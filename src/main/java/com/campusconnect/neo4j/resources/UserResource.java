@@ -59,7 +59,7 @@ public class UserResource {
     private void checkWhetherSynchIsNeeded(User user, Fields fields) {
         for (Field field : fields.getFields()) {
             if(field.getName().contains("goodreadsAccessTokenSecret")) {
-                goodreadsDao.getAndSaveBooksFromGoodreads(user.getGoodreadsId(), user.getGoodreadsAccessToken(), user.getGoodreadsAccessTokenSecret());
+                goodreadsDao.getAndSaveBooksFromGoodreads(user.getId(), user.getGoodreadsId(), user.getGoodreadsAccessToken(), user.getGoodreadsAccessTokenSecret());
             }
             else if(field.getName().contains("fbId")) {
                 //todo kick off fb stuff
@@ -105,7 +105,7 @@ public class UserResource {
     }
     
     @POST
-    @Path("{userId}/books/{bookId}")
+    @Path("{userId}/books/{bookId}/own")
     public Response addBook(@PathParam("userId") final String userId, 
                             @PathParam("bookId") final String bookId,
                             @QueryParam("status") @DefaultValue("none") final String status) throws Exception {
@@ -117,8 +117,21 @@ public class UserResource {
         return Response.ok().build();
     }
     
+    @POST
+    @Path("{userId}/books/{bookId}/wish")
+    public Response addBookToWishList(@PathParam("userId") final String userId,
+                            @PathParam("bookId") final String bookId,
+                            @QueryParam("status") @DefaultValue("none") final String status) throws Exception {
+        
+        User user = userDao.getUser(userId);
+        Book book = bookDao.getBook(bookId);
+        long now = System.currentTimeMillis();
+        bookDao.addWishBookToUser(new WishListRelationship(user, book, status, now, now));
+        return Response.ok().build();
+    }
+    
     @PUT
-    @Path("{userId}/books/{bookId}")
+    @Path("{userId}/books/{bookId}/own")
     public Response changeBookStatus(@PathParam("userId") final String userId, 
                             @PathParam("bookId") final String bookId,
                             @QueryParam("status") @DefaultValue("none") final String status) throws Exception {
@@ -136,22 +149,26 @@ public class UserResource {
         if(filter == null){
             throw new Exception("filer is null");
         }
-        if(filter.equals("owned")){
-            final List<OwnedBook> ownedBooks = userDao.getOwnedBooks(userId);
-            OwnedBooksPage ownedBooksPage = new OwnedBooksPage(0, ownedBooks.size(), ownedBooks);
-            return Response.ok().entity(ownedBooksPage).build();
-        } else if(filter.equals("available")) {
-            final List<OwnedBook> ownedBooks = userDao.getAvailableBooks(userId);
-            OwnedBooksPage ownedBooksPage = new OwnedBooksPage(0, ownedBooks.size(), ownedBooks);
-            return Response.ok().entity(ownedBooksPage).build();
-        } else if (filter.equals("lent")) {
-            final List<OwnedBook> ownedBooks = userDao.getLentBooks(userId);
-            OwnedBooksPage ownedBooksPage = new OwnedBooksPage(0, ownedBooks.size(), ownedBooks);
-            return Response.ok().entity(ownedBooksPage).build();
-        } else if (filter.equals("borrowed")) {
-            final List<BorrowedBook> borrowedBooks = userDao.getBorrowedBooks(userId);
-            BorrowedBooksPage borrowedBooksPage = new BorrowedBooksPage(0, borrowedBooks.size(), borrowedBooks);
-            return Response.ok().entity(borrowedBooksPage).build();
+        switch (filter) {
+            case "owned": {
+                final List<OwnedBook> ownedBooks = userDao.getOwnedBooks(userId);
+                OwnedBooksPage ownedBooksPage = new OwnedBooksPage(0, ownedBooks.size(), ownedBooks);
+                return Response.ok().entity(ownedBooksPage).build();
+            }
+            case "available": {
+                final List<OwnedBook> ownedBooks = userDao.getAvailableBooks(userId);
+                OwnedBooksPage ownedBooksPage = new OwnedBooksPage(0, ownedBooks.size(), ownedBooks);
+                return Response.ok().entity(ownedBooksPage).build();
+            }
+            case "lent": {
+                final List<OwnedBook> ownedBooks = userDao.getLentBooks(userId);
+                OwnedBooksPage ownedBooksPage = new OwnedBooksPage(0, ownedBooks.size(), ownedBooks);
+                return Response.ok().entity(ownedBooksPage).build();
+            }
+            case "borrowed":
+                final List<BorrowedBook> borrowedBooks = userDao.getBorrowedBooks(userId);
+                BorrowedBooksPage borrowedBooksPage = new BorrowedBooksPage(0, borrowedBooks.size(), borrowedBooks);
+                return Response.ok().entity(borrowedBooksPage).build();
         }
         return Response.ok().build();
     }
