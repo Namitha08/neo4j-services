@@ -135,4 +135,9 @@ public class BookDaoImpl implements BookDao {
     public void addWishBookToUser(WishListRelationship wishListRelationship) {
         neo4jTemplate.save(wishListRelationship);
     }
+    
+    @Override
+    public void createGoodreadsFriendBookRec(GoodreadsFriendBookRecRelation goodreadsFriendBookRecRelation) {
+        neo4jTemplate.save(goodreadsFriendBookRecRelation);
+    }
 }

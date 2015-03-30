@@ -31,6 +31,36 @@ public class Book implements Serializable {
     private String publisher;
     private Integer numberOfPages;
 
+    public Book(Integer goodreadsId, String authorName, String goodreadsAuthorId, String name, String isbn, String isbn13, int publishedYear, String description, String publisher, Integer numberOfPages, String imageUrl) {
+        this.goodreadsId = goodreadsId;
+        this.authorName = authorName;
+        this.goodreadsAuthorId = goodreadsAuthorId;
+        this.name = name;
+        this.isbn = isbn;
+        this.isbn13 = isbn13;
+        this.publishedYear = publishedYear;
+        this.description = description;
+        this.publisher = publisher;
+        this.numberOfPages = numberOfPages;
+        this.imageUrl = imageUrl;
+    }
+
+    public Book(Long nodeId, String id, Integer goodreadsId, String authorName, String goodreadsAuthorId, String name, String isbn, String isbn13, int publishedYear, String description, String publisher, Integer numberOfPages, String imageUrl) {
+        this.nodeId = nodeId;
+        this.id = id;
+        this.goodreadsId = goodreadsId;
+        this.authorName = authorName;
+        this.goodreadsAuthorId = goodreadsAuthorId;
+        this.name = name;
+        this.isbn = isbn;
+        this.isbn13 = isbn13;
+        this.publishedYear = publishedYear;
+        this.description = description;
+        this.publisher = publisher;
+        this.numberOfPages = numberOfPages;
+        this.imageUrl = imageUrl;
+    }
+
     public String getPublisher() {
         return publisher;
     }
@@ -149,5 +179,24 @@ public class Book implements Serializable {
 
     public void setIsbn13(String isbn13) {
         this.isbn13 = isbn13;
+    }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "nodeId=" + nodeId +
+                ", id='" + id + '\'' +
+                ", goodreadsId=" + goodreadsId +
+                ", authorName='" + authorName + '\'' +
+                ", goodreadsAuthorId='" + goodreadsAuthorId + '\'' +
+                ", name='" + name + '\'' +
+                ", isbn='" + isbn + '\'' +
+                ", isbn13='" + isbn13 + '\'' +
+                ", publishedYear=" + publishedYear +
+                ", description='" + description + '\'' +
+                ", publisher='" + publisher + '\'' +
+                ", numberOfPages=" + numberOfPages +
+                ", imageUrl='" + imageUrl + '\'' +
+                '}';
     }
 }

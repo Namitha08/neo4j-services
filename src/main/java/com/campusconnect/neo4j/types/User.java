@@ -28,23 +28,39 @@ public class User implements Serializable {
     private String fbId;
     private String name;
     private String email;
-
+    private String profileImageUrl;
     @LastModifiedDate
     private long lastModifiedDate;
-    
     @Fetch
     private Set<Address> addresses;
     private String phone;
     @CreatedDate
     private long createdDate;
-
-    public void setGoodreadsAuthStatus(String goodreadsAuthStatus) {
-        this.goodreadsAuthStatus = goodreadsAuthStatus;
-    }
-
     private String goodreadsAuthStatus;
     private String goodreadsId;
     private String goodreadsAccessToken;
+    private String goodreadsAccessTokenSecret;
+    public User(String name, String email, String phone) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+    }
+    public User(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    public User() {
+
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
 
     public String getGoodreadsAccessTokenSecret() {
         return goodreadsAccessTokenSecret;
@@ -54,7 +70,6 @@ public class User implements Serializable {
         this.goodreadsAccessTokenSecret = goodreadsAccessTokenSecret;
     }
 
-    private String goodreadsAccessTokenSecret;
     public String getGoodreadsId() {
         return goodreadsId;
     }
@@ -69,21 +84,6 @@ public class User implements Serializable {
 
     public void setGoodreadsAccessToken(String goodreadsAccessToken) {
         this.goodreadsAccessToken = goodreadsAccessToken;
-    }
-
-    public User(String name, String email, String phone) {
-        this.name = name;
-        this.email = email;
-        this.phone = phone;
-    }
-
-    public User(String name, String email) {
-        this.name = name;
-        this.email = email;
-    }
-
-    public User() {
-
     }
 
     public String getFbId() {
@@ -173,5 +173,9 @@ public class User implements Serializable {
 
     public String getGoodreadsAuthStatus() {
         return goodreadsAuthStatus;
+    }
+
+    public void setGoodreadsAuthStatus(String goodreadsAuthStatus) {
+        this.goodreadsAuthStatus = goodreadsAuthStatus;
     }
 }

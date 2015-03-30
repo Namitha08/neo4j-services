@@ -55,6 +55,7 @@ public class GetBooksWorker extends UntypedActor {
             GetBooksResponse getBooksResponse = ResponseUtils.getEntity(response.getBody(), GetBooksResponse.class);
             List<com.campusconnect.neo4j.types.Book> books = getBooksList(getBooksResponse, getBooksTask);
             System.out.println(response.getBody());
+            //todo: return books - save to cache?
         }
     }
 
@@ -73,7 +74,6 @@ public class GetBooksWorker extends UntypedActor {
                                 getBooksTask.getUserId(), review.getShelves() != null && !review.getShelves().isEmpty() ? review.getShelves().get(0).getName() : "none"),
                         goodreadsAsynchHandler.getSuccessListener());
             }
-        
         return books;
     }
 }

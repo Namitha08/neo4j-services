@@ -1,5 +1,6 @@
 package com.campusconnect.neo4j.da;
 
+import com.campusconnect.neo4j.akka.goodreads.GoodreadsAsynchHandler;
 import com.campusconnect.neo4j.da.iface.UserDao;
 import com.campusconnect.neo4j.repositories.UserRepository;
 import com.campusconnect.neo4j.types.*;
@@ -20,6 +21,9 @@ public class UserDaoImpl implements UserDao {
     @Autowired
     UserRepository userRepository;
     private Neo4jTemplate neo4jTemplate;
+    
+    @Autowired
+    GoodreadsAsynchHandler goodreadsAsynchHandler;
 
     public UserDaoImpl(Neo4jTemplate neo4jTemplate) {
         this.neo4jTemplate = neo4jTemplate;
@@ -126,17 +130,45 @@ public class UserDaoImpl implements UserDao {
         return getWishListBooksFromResultMap(mapResult);
     }
 
+    @Override
+    public void synchWishListRec(String userId) {
+        User user = getUser(userId);
+        if(user != null)
+            goodreadsAsynchHandler.getFriendRecForUser(userId, user.getGoodreadsId(), user.getGoodreadsAccessToken(), user.getGoodreadsAccessTokenSecret());
+    }
+
+    @Override
+    public List<UserRecommendation> getUserRecommendations(String userId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", userId);
+        Result<Map<String, Object>> mapResult = neo4jTemplate.query("match (users:User {id: {userId}})-[relation:GR_REC]->(books:Book) return books, relation", params);
+        return getWishUserRecFromResultMap(mapResult);
+    }
+
     private List<WishListBook> getWishListBooksFromResultMap(Result<Map<String, Object>> mapResult) {
         List<WishListBook> wishListBooks = new ArrayList<>();
         for (Map<String, Object> objectMap : mapResult) {
             RestNode bookNode = (RestNode) objectMap.get("books");
-            RestRelationship rawOwnsRelationship = (RestRelationship) objectMap.get("relation");
+            RestRelationship rawWishRelationship = (RestRelationship) objectMap.get("relation");
 
             Book book = neo4jTemplate.convert(bookNode, Book.class);
-            WishListRelationship whishListRelationship = neo4jTemplate.convert(rawOwnsRelationship, WishListRelationship.class);
+            WishListRelationship whishListRelationship = neo4jTemplate.convert(rawWishRelationship, WishListRelationship.class);
             wishListBooks.add(new WishListBook(book, whishListRelationship));
         }
         return wishListBooks;
+    }
+    
+    private List<UserRecommendation> getWishUserRecFromResultMap(Result<Map<String, Object>> mapResult) {
+        List<UserRecommendation> userRecommendations = new ArrayList<>();
+        for (Map<String, Object> objectMap : mapResult) {
+            RestNode bookNode = (RestNode) objectMap.get("books");
+            RestRelationship rawWishRelationship = (RestRelationship) objectMap.get("relation");
+
+            Book book = neo4jTemplate.convert(bookNode, Book.class);
+            GoodreadsFriendBookRecRelation goodreadsFriendBookRecRelation = neo4jTemplate.convert(rawWishRelationship, GoodreadsFriendBookRecRelation.class);
+            userRecommendations.add(new UserRecommendation(book, goodreadsFriendBookRecRelation));
+        }
+        return userRecommendations;
     }
 
     private List<BorrowedBook> getBorrowedBooksFromResultMap(Result<Map<String, Object>> mapResult) {

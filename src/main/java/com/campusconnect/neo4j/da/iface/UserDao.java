@@ -1,9 +1,6 @@
 package com.campusconnect.neo4j.da.iface;
 
-import com.campusconnect.neo4j.types.BorrowedBook;
-import com.campusconnect.neo4j.types.OwnedBook;
-import com.campusconnect.neo4j.types.User;
-import com.campusconnect.neo4j.types.WishListBook;
+import com.campusconnect.neo4j.types.*;
 import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
@@ -35,4 +32,9 @@ public interface UserDao {
     List<BorrowedBook> getBorrowedBooks(String userId);
     
     List<WishListBook> getWishListBooks(String userId);
+
+    void synchWishListRec(String userId);
+    
+    List<UserRecommendation> getUserRecommendations(String userId);
+    
 }

@@ -22,15 +22,20 @@ import java.util.List;
 public class ResponseUtils {
     public static Logger logger = LoggerFactory.getLogger(ResponseUtils.class);
     public static <T> T getEntity(String xmlData, Class<T> clazz) throws IOException {
+    try{
         XMLSerializer xmlSerializer = new XMLSerializer();
         final String cleanedUpXML = StringUtils.cleanEmptyTags(xmlData);
-        logger.debug("Cleaned up data \n" + cleanedUpXML);
+//        logger.debug("Cleaned up data \n" + cleanedUpXML);
         JSON json = xmlSerializer.read(cleanedUpXML);
-        logger.debug("Converted Json \n" + json);
+//        logger.debug("Converted Json \n" + json);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         T response = objectMapper.readValue(json.toString(), clazz);
         return response;
+    } catch (Exception e){
+        logger.error("Failed to deserialize:\n" + "XML:" + xmlData, e);
+    }
+    return null;
     }
     
 //    public static String getStandardShelfName(List<Shelf> shelfList) {

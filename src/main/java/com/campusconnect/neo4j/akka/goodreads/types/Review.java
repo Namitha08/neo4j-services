@@ -52,8 +52,6 @@ private List<Shelf> shelves = new ArrayList<Shelf>();
 private String dateAdded;
 @JsonProperty("date_updated")
 private String dateUpdated;
-@JsonProperty("body")
-private List<Object> body = new ArrayList<Object>();
 @JsonProperty("comments_count")
 private String commentsCount;
 @JsonProperty("url")
@@ -247,26 +245,6 @@ return dateUpdated;
 @JsonProperty("date_updated")
 public void setDateUpdated(String dateUpdated) {
 this.dateUpdated = dateUpdated;
-}
-
-/**
-* 
-* @return
-* The body
-*/
-@JsonProperty("body")
-public List<Object> getBody() {
-return body;
-}
-
-/**
-* 
-* @param body
-* The body
-*/
-@JsonProperty("body")
-public void setBody(List<Object> body) {
-this.body = body;
 }
 
 /**

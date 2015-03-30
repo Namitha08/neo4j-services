@@ -53,6 +53,9 @@
         <property name="saveBooksToDbRouter" ref="saveBookToDbRouter" />
         <property name="getAndSaveBooksRouter" ref="getBooksRouter"/>
         <property name="addGoodreadsBookToUserRouter" ref="addBooksToUserRouter" />
+        <property name="userRecForWishListRouter" ref="userRecForWishlist" />
+        <property name="friendsBookSearchForWishListRouter" ref="friendsBookSearchForWishListWorker" />
+        <property name="getFriendsRouter" ref="getFriendsRouter" />
     </bean>
 
     <bean id="goodreadsDao" class="com.campusconnect.neo4j.da.GoodreadsDao">
@@ -78,6 +81,10 @@
         <constructor-arg index="0" ref="goodReadsClient" />
     </bean>
     
+    <bean class="com.campusconnect.neo4j.akka.goodreads.api.GetBooks" id="getBooks">
+        <constructor-arg index="0" ref="goodReadsClient" />
+    </bean>
+    
     <bean class="com.campusconnect.neo4j.akka.goodreads.api.Search" id="search">
         <constructor-arg index="0" ref="goodReadsClient" />
     </bean>
@@ -99,7 +106,7 @@
     
     <bean class="com.campusconnect.neo4j.da.FBDao" id="fbDao">
         <constructor-arg index="0" ref="connectionFactory" />
-        <constructor-arg index="1" ref="getFriendsRouter" />
+        <constructor-arg index="1" ref="getFbFriendsRouter" />
         <constructor-arg index="2" ref="successListener" />
         
     </bean>
@@ -113,19 +120,39 @@
         <!-- actor system name -->
         <property name="name" value="MyActorSystem"/>
         <!-- actor system configuration -->
-        <property name="config">
-            <bean class="com.typesafe.config.ConfigFactory" factory-method="load">
-                <constructor-arg value="akkaActor.conf"/>
-            </bean>
-        </property>
+        <!--<property name="config">-->
+            <!--<bean class="com.typesafe.config.ConfigFactory" factory-method="load">-->
+                <!--<constructor-arg value="akkaActor.conf"/>-->
+            <!--</bean>-->
+        <!--</property>-->
     </bean>
 
-    <bean id="getFriendsRouter" class="com.github.sabomichal.akkaspringfactory.ActorFactoryBean">
+    <bean id="getFbFriendsRouter" class="com.github.sabomichal.akkaspringfactory.ActorFactoryBean">
         <property name="actorSystem" ref="actorSystem"/>
         <property name="actorClass" value="com.campusconnect.neo4j.akka.facebook.worker.GetFriendsWorker"/>
         <property name="routerConfig">
             <bean class="akka.routing.SmallestMailboxPool">
-                <constructor-arg value="${akka.friends.get.workers.count}"/>
+                <constructor-arg type="int" value="${akka.friends.get.workers.count}"/>
+            </bean>
+        </property>
+    </bean>
+    
+    <bean id="getFriendsRouter" class="com.github.sabomichal.akkaspringfactory.ActorFactoryBean">
+        <property name="actorSystem" ref="actorSystem"/>
+        <property name="actorClass" value="com.campusconnect.neo4j.akka.goodreads.worker.GetFriends"/>
+        <property name="routerConfig">
+            <bean class="akka.routing.SmallestMailboxPool">
+                <constructor-arg index="0" type="int" value="${akka.friends.get.workers.count}"/>
+            </bean>
+        </property>
+    </bean>
+    
+    <bean id="friendsBookSearchForWishListWorker" class="com.github.sabomichal.akkaspringfactory.ActorFactoryBean">
+        <property name="actorSystem" ref="actorSystem"/>
+        <property name="actorClass" value="com.campusconnect.neo4j.akka.goodreads.worker.FriendsBookSearchForWishListWorker"/>
+        <property name="routerConfig">
+            <bean class="akka.routing.SmallestMailboxPool">
+                <constructor-arg type="int" value="${akka.friends.get.workers.count}"/>
             </bean>
         </property>
     </bean>
@@ -135,7 +162,7 @@
         <property name="actorClass" value="com.campusconnect.neo4j.akka.goodreads.worker.AddGoodreadsBookToUserWorker"/>
         <property name="routerConfig">
             <bean class="akka.routing.SmallestMailboxPool">
-                <constructor-arg value="${akka.friends.get.workers.count}"/>
+                <constructor-arg type="int" value="${akka.friends.get.workers.count}"/>
             </bean>
         </property>
     </bean>
@@ -146,17 +173,27 @@
         <property name="actorClass" value="com.campusconnect.neo4j.akka.goodreads.worker.SaveBooksToDbWorker"/>
         <property name="routerConfig">
             <bean class="akka.routing.SmallestMailboxPool">
-                <constructor-arg value="${akka.save.book.workers.count}"/>
+                <constructor-arg type="int" value="${akka.save.book.workers.count}"/>
             </bean>
         </property>
     </bean>
     
+    <bean id="userRecForWishlist" class="com.github.sabomichal.akkaspringfactory.ActorFactoryBean">
+        <property name="actorSystem" ref="actorSystem"/>
+        <property name="actorClass" value="com.campusconnect.neo4j.akka.goodreads.worker.UserRecForWishlist"/>
+        <property name="routerConfig">
+            <bean class="akka.routing.SmallestMailboxPool">
+                <constructor-arg type="int" value="${akka.wishlist.friends.rec.count}"/>
+            </bean>
+        </property>
+    </bean>
+
     <bean id="getBooksRouter" class="com.github.sabomichal.akkaspringfactory.ActorFactoryBean">
         <property name="actorSystem" ref="actorSystem"/>
         <property name="actorClass" value="com.campusconnect.neo4j.akka.goodreads.worker.GetBooksWorker"/>
         <property name="routerConfig">
             <bean class="akka.routing.SmallestMailboxPool">
-                <constructor-arg value="${akka.get.books.workers.count}"/>
+                <constructor-arg  type="int" value="${akka.get.books.workers.count}"/>
             </bean>
         </property>
     </bean>

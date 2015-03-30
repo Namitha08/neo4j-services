@@ -38,5 +38,6 @@ public interface BookDao {
     public Book getBookByGoodreadsId(String goodreadsId, Book book);
 
     public void addWishBookToUser(WishListRelationship wishListRelationship);
-    
+
+    void createGoodreadsFriendBookRec(GoodreadsFriendBookRecRelation goodreadsFriendBookRecRelation);
 }

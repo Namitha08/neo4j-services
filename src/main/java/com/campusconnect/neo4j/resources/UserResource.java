@@ -143,6 +143,13 @@ public class UserResource {
         return Response.ok().build();
     }
     
+    @PUT
+    @Path("{userId}/books/wishlist/rec")
+    public Response synchWishListRec(@PathParam("userId") final String userId) {
+        userDao.synchWishListRec(userId);
+        return Response.ok().build();
+    }
+    
     @GET
     @Path("{userId}/books")
     public Response getBooks(@PathParam("userId") final String userId, @QueryParam("filter") String filter) throws Exception {

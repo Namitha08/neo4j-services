@@ -48,6 +48,16 @@ public class OwnedBook extends Book implements Serializable {
         this.lastModifiedDate = lastModifiedDate;
     }
 
+    public OwnedBook(Integer goodreadsId, String authorName, String goodreadsAuthorId, String name, String isbn, String isbn13, int publishedYear, String description, String publisher, Integer numberOfPages, String imageUrl, long createdDate, String status, long lastModifiedDate, String borrowerId, String dueDate, int contractPeriodInDays) {
+        super(goodreadsId, authorName, goodreadsAuthorId, name, isbn, isbn13, publishedYear, description, publisher, numberOfPages, imageUrl);
+        this.createdDate = createdDate;
+        this.status = status;
+        this.lastModifiedDate = lastModifiedDate;
+        this.borrowerId = borrowerId;
+        this.dueDate = dueDate;
+        this.contractPeriodInDays = contractPeriodInDays;
+    }
+
     public String getBorrowerId() {
         return borrowerId;
     }
