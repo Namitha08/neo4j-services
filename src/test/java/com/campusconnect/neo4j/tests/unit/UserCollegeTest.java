@@ -18,18 +18,13 @@ import static com.campusconnect.neo4j.tests.functional.base.DataBrewer.getFakeUs
  */
 public class UserCollegeTest extends TestBase {
 
+    College createdCollege;
     @Autowired
     private CollegeDao collegeDao;
-
     @Autowired
     private UserDaoImpl userDaoImpl;
-
     @Autowired
     private UserResource  userResource;
-
-    College createdCollege;
-
-
 
     @Test
     public void addUserToCollege(){
@@ -38,7 +33,7 @@ public class UserCollegeTest extends TestBase {
         createdCollege = collegeDao.createCollege(college);
 
         User user = getFakeUser();
-        User createdUser = userDaoImpl.createUser(user);
+        User createdUser = userDaoImpl.createUser(user, null);
 
         System.err.println("college-id:" + createdCollege.getId() + " userId:" + user.getId());
 

@@ -8,22 +8,21 @@ import org.testng.annotations.Test;
 
 import java.util.List;
 
-import static com.campusconnect.neo4j.tests.functional.base.DataBrewer.*;
+import static com.campusconnect.neo4j.tests.functional.base.DataBrewer.getFakeUser;
+import static com.campusconnect.neo4j.tests.functional.base.DataBrewer.getFakeUserWithAddress;
 
 /**
  * Created by sn1 on 1/18/15.
  */
 public class UserTest extends TestBase {
 
-
+    User createdUser;
     @Autowired
     private UserDaoImpl userDaoImpl;
 
-    User createdUser;
-
     @Test
     public void createTest(){
-        createdUser = userDaoImpl.createUser(getFakeUser());
+        createdUser = userDaoImpl.createUser(getFakeUser(), null);
     }
 
     @Test(dependsOnMethods = "createTest")
@@ -46,7 +45,7 @@ public class UserTest extends TestBase {
     
     @Test
     public void createUserWithAddress() {
-        createdUser = userDaoImpl.createUser(getFakeUserWithAddress());
+        createdUser = userDaoImpl.createUser(getFakeUserWithAddress(), null);
         User resultUser = userDaoImpl.getUser(createdUser.getId());
         System.err.println(resultUser);
     }
@@ -54,26 +53,26 @@ public class UserTest extends TestBase {
     @Test
     public void addFollowerToFixedIdUser(){
         User fixedIdUser = userDaoImpl.getUser("8318f66b-c836-4c89-888b-97dc72927e78");
-        User secondUser = userDaoImpl.createUser(getFakeUser());
+        User secondUser = userDaoImpl.createUser(getFakeUser(), null);
         userDaoImpl.createFollowingRelation(fixedIdUser, secondUser);
     }
 
     @Test
     public void addFollowingToFixedIdUser(){
         User fixedIdUser = userDaoImpl.getUser("8318f66b-c836-4c89-888b-97dc72927e78");
-        User secondUser = userDaoImpl.createUser(getFakeUser());
+        User secondUser = userDaoImpl.createUser(getFakeUser(), null);
         userDaoImpl.createFollowingRelation(secondUser, fixedIdUser);
     }
 
     @Test(dependsOnMethods = "getUser")
     public void addFollower(){
-        User secondUser = userDaoImpl.createUser(getFakeUser());
+        User secondUser = userDaoImpl.createUser(getFakeUser(), null);
         userDaoImpl.createFollowingRelation(createdUser, secondUser);
     }
 
     @Test(dependsOnMethods = "getUser")
     public void addFollowing(){
-        User secondUser = userDaoImpl.createUser(getFakeUser());
+        User secondUser = userDaoImpl.createUser(getFakeUser(), null);
         userDaoImpl.createFollowingRelation(secondUser, createdUser);
     }
 

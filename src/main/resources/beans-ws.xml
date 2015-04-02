@@ -1,8 +1,8 @@
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:neo4j="http://www.springframework.org/schema/data/neo4j"
        xmlns:ehcache="http://ehcache-spring-annotations.googlecode.com/svn/schema/ehcache-spring"
+       xmlns="http://www.springframework.org/schema/beans"
 
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 						   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
@@ -103,7 +103,17 @@
         <constructor-arg index="0" ref="bookDao"/>
         <constructor-arg index="1" ref="userDao"/>
     </bean>
-    
+
+    <bean class="com.campusconnect.neo4j.akka.facebook.client.FacebookClient" id="facebookClient">
+        <constructor-arg index="0" value="${fb.client.url}"/>
+
+
+    </bean>
+
+    <bean class="com.campusconnect.neo4j.akka.facebook.api.GetUserProfileImage" id="getUserProfileImage">
+        <constructor-arg index="0" ref="facebookClient"/>
+    </bean>
+
     <bean class="com.campusconnect.neo4j.da.FBDao" id="fbDao">
         <constructor-arg index="0" ref="connectionFactory" />
         <constructor-arg index="1" ref="getFbFriendsRouter" />

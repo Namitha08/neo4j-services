@@ -20,58 +20,65 @@ public class UserDaoImpl implements UserDao {
 
     @Autowired
     UserRepository userRepository;
-    private Neo4jTemplate neo4jTemplate;
-    
     @Autowired
     GoodreadsAsynchHandler goodreadsAsynchHandler;
+    @Autowired
+    private FBDao fbDao;
+    private Neo4jTemplate neo4jTemplate;
 
     public UserDaoImpl(Neo4jTemplate neo4jTemplate) {
         this.neo4jTemplate = neo4jTemplate;
     }
 
     @Override
-    public User createUser(User user) {
+    public User createUser(User user, String accessToken) {
         user.setId(UUID.randomUUID().toString());
+        if (accessToken != null && user.getFbId() != null) {
+            String profileImageUrl = fbDao.getUserProfileImage(user.getFbId(), accessToken);
+            if (profileImageUrl != null) {
+                user.setProfileImageUrl(profileImageUrl);
+            }
+        }
         return neo4jTemplate.save(user);
     }
-    
+
     @Override
-    @Cacheable(cacheName = "userIdCache", keyGenerator = @KeyGenerator(name="HashCodeCacheKeyGenerator", properties = @Property( name="includeMethod", value="false")))
+    @Cacheable(cacheName = "userIdCache", keyGenerator = @KeyGenerator(name = "HashCodeCacheKeyGenerator", properties = @Property(name = "includeMethod", value = "false")))
     public User getUser(String userId) {
         return userRepository.findBySchemaPropertyValue("id", userId);
     }
-    
+
     @Override
     public User getUserByFbId(String fbId) {
         return userRepository.findBySchemaPropertyValue("fbId", fbId);
     }
 
     @Override
-    @TriggersRemove(cacheName = "userFollowing", keyGenerator = @KeyGenerator(name="HashCodeCacheKeyGenerator", properties = @Property( name="includeMethod", value="false")))
+    @TriggersRemove(cacheName = "userFollowing", keyGenerator = @KeyGenerator(name = "HashCodeCacheKeyGenerator", properties = @Property(name = "includeMethod", value = "false")))
     public void createFollowingRelation(@PartialCacheKey User user1, User user2) {
         neo4jTemplate.createRelationshipBetween(user1, user2, FollowingRelation.class, UserRelationType.FOLLOWING.toString(), false);
     }
 
     @Override
-    @TriggersRemove(cacheName = "userIdCache", keyGenerator = @KeyGenerator(name="HashCodeCacheKeyGenerator", properties = @Property( name="includeMethod", value="false")))
+    @TriggersRemove(cacheName = "userIdCache", keyGenerator = @KeyGenerator(name = "HashCodeCacheKeyGenerator", properties = @Property(name = "includeMethod", value = "false")))
     public User updateUser(@PartialCacheKey String userId, User user) {
         return neo4jTemplate.save(user);
     }
 
     @Override
-    @Cacheable(cacheName = "userFollowers", keyGenerator = @KeyGenerator(name="HashCodeCacheKeyGenerator", properties = @Property( name="includeMethod", value="false")))
+    @Cacheable(cacheName = "userFollowers", keyGenerator = @KeyGenerator(name = "HashCodeCacheKeyGenerator", properties = @Property(name = "includeMethod", value = "false")))
     public List<User> getFollowers(User user) {
         return userRepository.getFollowers(user.getId());
     }
 
     @Override
-    @Cacheable(cacheName = "userFollowing", keyGenerator = @KeyGenerator(name="HashCodeCacheKeyGenerator", properties = @Property( name="includeMethod", value="false")))
+    @Cacheable(cacheName = "userFollowing", keyGenerator = @KeyGenerator(name = "HashCodeCacheKeyGenerator", properties = @Property(name = "includeMethod", value = "false")))
     public List<User> getFollowing(User user) {
         return userRepository.getFollowing(user.getId());
     }
 
     @Override
-    @Cacheable(cacheName = "userOwnedBooks", keyGenerator = @KeyGenerator(name="HashCodeCacheKeyGenerator", properties = @Property( name="includeMethod", value="false")))
+    @Cacheable(cacheName = "userOwnedBooks", keyGenerator = @KeyGenerator(name = "HashCodeCacheKeyGenerator", properties = @Property(name = "includeMethod", value = "false")))
     public List<OwnedBook> getOwnedBooks(String userId) {
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
@@ -90,7 +97,7 @@ public class UserDaoImpl implements UserDao {
 
         return getOwnedBooksFromResultMap(mapResult);
     }
-    
+
     @Override
     public List<OwnedBook> getLentBooks(String userId) {
         Map<String, Object> params = new HashMap<>();
@@ -113,7 +120,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    @Cacheable(cacheName = "userBorrowedBooks", keyGenerator = @KeyGenerator(name="HashCodeCacheKeyGenerator", properties = @Property( name="includeMethod", value="false")))
+    @Cacheable(cacheName = "userBorrowedBooks", keyGenerator = @KeyGenerator(name = "HashCodeCacheKeyGenerator", properties = @Property(name = "includeMethod", value = "false")))
     public List<BorrowedBook> getBorrowedBooks(String userId) {
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
@@ -122,7 +129,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    @Cacheable(cacheName = "userWishBooks", keyGenerator = @KeyGenerator(name="HashCodeCacheKeyGenerator", properties = @Property( name="includeMethod", value="false")))
+    @Cacheable(cacheName = "userWishBooks", keyGenerator = @KeyGenerator(name = "HashCodeCacheKeyGenerator", properties = @Property(name = "includeMethod", value = "false")))
     public List<WishListBook> getWishListBooks(String userId) {
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
@@ -133,7 +140,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public void synchWishListRec(String userId) {
         User user = getUser(userId);
-        if(user != null)
+        if (user != null)
             goodreadsAsynchHandler.getFriendRecForUser(userId, user.getGoodreadsId(), user.getGoodreadsAccessToken(), user.getGoodreadsAccessTokenSecret());
     }
 
@@ -157,7 +164,7 @@ public class UserDaoImpl implements UserDao {
         }
         return wishListBooks;
     }
-    
+
     private List<UserRecommendation> getWishUserRecFromResultMap(Result<Map<String, Object>> mapResult) {
         List<UserRecommendation> userRecommendations = new ArrayList<>();
         for (Map<String, Object> objectMap : mapResult) {

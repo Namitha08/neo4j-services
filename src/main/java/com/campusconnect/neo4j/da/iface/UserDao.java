@@ -1,7 +1,6 @@
 package com.campusconnect.neo4j.da.iface;
 
 import com.campusconnect.neo4j.types.*;
-import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 
@@ -9,7 +8,7 @@ import java.util.List;
  * Created by sn1 on 3/6/15.
  */
 public interface UserDao {
-    User createUser(User user);
+    User createUser(User user, String accessToken);
 
     User getUser(String userId);
 
@@ -30,11 +29,11 @@ public interface UserDao {
     List<OwnedBook> getLentBooks(String userId);
 
     List<BorrowedBook> getBorrowedBooks(String userId);
-    
+
     List<WishListBook> getWishListBooks(String userId);
 
     void synchWishListRec(String userId);
-    
+
     List<UserRecommendation> getUserRecommendations(String userId);
-    
+
 }
