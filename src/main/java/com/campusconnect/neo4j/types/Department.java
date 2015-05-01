@@ -1,6 +1,6 @@
 package com.campusconnect.neo4j.types;
 
-import org.joda.time.DateTime;
+
 import org.springframework.data.annotation.*;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.neo4j.annotation.GraphId;
@@ -21,10 +21,10 @@ public class Department {
     private String name;
 
     @CreatedDate
-    private DateTime createdDate;
+    private long createdDate;
 
     @LastModifiedDate
-    private DateTime lastModifiedTime;
+    private long lastModifiedTime;
 
     @CreatedBy
     private String createdBy;
@@ -84,19 +84,19 @@ public class Department {
         this.name = name;
     }
 
-    public DateTime getCreatedDate() {
+    public long getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(DateTime createdDate) {
+    public void setCreatedDate(long createdDate) {
         this.createdDate = createdDate;
     }
 
-    public DateTime getLastModifiedTime() {
+    public long getLastModifiedTime() {
         return lastModifiedTime;
     }
 
-    public void setLastModifiedTime(DateTime lastModifiedTime) {
+    public void setLastModifiedTime(long lastModifiedTime) {
         this.lastModifiedTime = lastModifiedTime;
     }
 

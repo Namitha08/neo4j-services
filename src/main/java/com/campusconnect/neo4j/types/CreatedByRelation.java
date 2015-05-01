@@ -1,6 +1,6 @@
 package com.campusconnect.neo4j.types;
 
-import org.joda.time.DateTime;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.neo4j.annotation.RelationshipEntity;
 
@@ -11,5 +11,5 @@ import org.springframework.data.neo4j.annotation.RelationshipEntity;
 public class CreatedByRelation {
 
     @CreatedDate
-    private DateTime createdDate;
+    private long createdDate;
 }
